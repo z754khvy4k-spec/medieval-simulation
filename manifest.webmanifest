@@ -1,9 +1,9 @@
 {
-  "name": "Medieval Simulation",
-  "short_name": "Medieval Sim",
-  "start_url": "./",
-  "scope": "./",
-  "display": "standalone",
-  "background_color": "#111111",
-  "theme_color": "#151515"
+  "name":"Medieval Simulation V3",
+  "short_name":"MedievalSim",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#0d0e10",
+  "theme_color":"#111111",
+  "icons":[]
 }

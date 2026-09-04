@@ -1,20 +1,21 @@
-# Medieval Simulation
+# The Living Realm — Medieval Simulation V3 UI
 
-Browser-native prototype of the regional medieval economic/social simulation.
+A game-like observer interface over the medieval simulation.
 
-## Included
-- 1,200 persistent simulated residents
-- occupations, wealth, needs, health, goals
-- commodity production, consumption, inventory and dynamic prices
-- imperfect information and limited memory
-- crime, detection and emergent criminal organization
-- guilds, town watch, political events and emergent labor association
-- population births/deaths
-- inspectable resident table
-- event stream and simulation controls
-- PWA manifest/service worker
+## Interface
+- RTS-style realm view and strategic settlement map
+- persistent left-side navigation
+- top resource/date bar
+- household drill-down
+- individual resident inspector
+- faction/institution inspector
+- crime inspector
+- separate Chronicle tab with historical charts
+- searchable people and households
+- mobile-responsive layout for iPhone
+- event stream and market inspection
 
-## Hosting
-The app is static. Upload these files to GitHub Pages, Netlify, Cloudflare Pages, or another static host. No server is required.
+## Important engine note
+The V2 engine underneath is still primarily a regional market and individual-agent prototype. The household browser groups residents for inspection; it does not falsely claim the current engine has a fully simulated family accounting layer. The UI is designed to make that distinction visible.
 
-This is the browser prototype, not yet the final simulation architecture. The next major layer should add households, firms, buildings, roads, transport costs, land/rents, credit, social graphs, reputation, courts, faction strategy and multi-resolution offscreen simulation.
+Deploy the files through GitHub Pages and open the resulting site on iPhone.
