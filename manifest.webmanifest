@@ -1,9 +1,9 @@
 {
-  "name":"Medieval Simulation V3",
-  "short_name":"MedievalSim",
-  "start_url":"./",
-  "display":"standalone",
-  "background_color":"#0d0e10",
-  "theme_color":"#111111",
-  "icons":[]
+  "name": "The Living Realm \u2014 Medieval Simulation V4",
+  "short_name": "Living Realm",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0b0d0c",
+  "theme_color": "#10110f",
+  "orientation": "landscape"
 }

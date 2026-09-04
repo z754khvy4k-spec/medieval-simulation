@@ -1,558 +1,692 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#101113"><link rel="manifest" href="./manifest.webmanifest"><title>The Living Realm — Medieval Simulation V3</title><style>
-:root{--bg:#0c0d0e;--panel:#151719;--panel2:#1b1d20;--line:#2b2e33;--text:#ece8df;--muted:#8e9198;--gold:#c9a766;--gold2:#e1c98f;--red:#b96b62;--green:#7da17e;--blue:#7897b8}
-*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-body{min-height:100vh;background:radial-gradient(circle at 50% -10%,#29251e 0,#0c0d0e 38%);font-size:13px}
-button,input{font:inherit}button{cursor:pointer;color:var(--text);background:#1a1c1f;border:1px solid #393c42;border-radius:7px;padding:8px 10px}button:hover{border-color:#686b72}button.gold{border-color:#806d48;color:var(--gold2);background:#211e18}
-input{background:#121416;color:#eee;border:1px solid #3b3e43;border-radius:7px;padding:8px 10px;outline:none}
-#gamebar{position:sticky;top:0;z-index:20;background:#101113f5;border-bottom:1px solid #35312a;backdrop-filter:blur(14px);padding:8px 12px}.top{display:flex;align-items:center;gap:12px;max-width:1500px;margin:auto}
-.crest{width:34px;height:34px;border:1px solid #796542;border-radius:50%;display:grid;place-items:center;color:var(--gold2);font-weight:800;background:#201c15}
-.title{font-family:Georgia,serif;font-weight:700;letter-spacing:.2px}.subtitle{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}.resources{display:flex;gap:7px;margin-left:auto;overflow:auto}
-.res{min-width:72px;padding:4px 8px;border-left:1px solid #323438}.res b{display:block;font-size:13px}.res span{font-size:8px;color:var(--muted)}.controls{display:flex;gap:5px;margin-left:8px}.controls button{padding:7px 9px}
-.layout{display:grid;grid-template-columns:185px minmax(0,1fr) 315px;min-height:calc(100vh - 52px);max-width:1500px;margin:auto}
-.sidebar{border-right:1px solid var(--line);background:#101113;padding:10px 8px}.sidehead{font-size:9px;text-transform:uppercase;color:#777;letter-spacing:1.2px;padding:9px}.nav{display:flex;flex-direction:column;gap:3px}
-.nav button{border:0;text-align:left;background:transparent;color:#aaa;padding:10px;border-radius:7px}.nav button.active{background:#26231d;color:var(--gold2);border:1px solid #4b4030}
-.tip{margin:20px 8px;padding:10px;border:1px solid #302f2c;background:#171719;border-radius:8px;font-size:10px;line-height:1.5;color:#92949a}
-.main{padding:13px;min-width:0}.right{border-left:1px solid var(--line);background:#101113;padding:12px;min-width:0}
-.pagehead{display:flex;justify-content:space-between;gap:10px;align-items:flex-end;margin-bottom:9px}.pagehead h2{margin:0;font-family:Georgia,serif;font-size:22px}.crumb{font-size:10px;color:var(--muted);margin-top:3px}
-.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.card{background:linear-gradient(180deg,#191b1e,#141517);border:1px solid var(--line);border-radius:9px;padding:10px;min-width:0}
-.label{font-size:8px;text-transform:uppercase;letter-spacing:1px;color:#858890}.big{font-family:Georgia,serif;font-size:20px;margin-top:3px}.delta{font-size:9px;color:var(--muted);margin-top:2px}
-.panel{background:#151719;border:1px solid var(--line);border-radius:9px;margin-top:8px;padding:10px}.panel h3{font-family:Georgia,serif;font-size:15px;margin:0 0 8px}.panelhead{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.map{height:310px;position:relative;overflow:hidden;background:radial-gradient(circle at 30% 40%,#343125 0,#1b1b19 35%,#111214 78%);border:1px solid #34332d;border-radius:9px;margin-top:8px}
-.road{position:absolute;height:2px;background:#5a5345;transform-origin:left center;opacity:.7}.settlement{position:absolute;width:120px;text-align:center;transform:translate(-50%,-50%);cursor:pointer}.settlement .town{width:50px;height:50px;margin:auto;border-radius:50%;border:1px solid #9b8354;background:#28231a;box-shadow:0 0 0 7px #211e17aa,0 4px 20px #000;display:grid;place-items:center;color:var(--gold2);font-size:20px}.settlement:hover .town{border-color:#e3c98e}.settlement b{display:block;font-family:Georgia,serif;margin-top:7px}.settlement small{color:#92949a;font-size:9px}.maplegend{position:absolute;bottom:8px;left:9px;font-size:9px;color:#777;background:#0f1011c9;padding:5px;border-radius:5px}
-.scroll{overflow:auto}.table{width:100%;border-collapse:collapse;font-size:11px}.table th,.table td{padding:7px 6px;border-bottom:1px solid #292c30;text-align:left;white-space:nowrap}.table th{color:#858890;font-size:8px;text-transform:uppercase;letter-spacing:.6px}.table tr.click{cursor:pointer}.table tr.click:hover{background:#202226}
-.warn{color:#c78279}.good{color:#86a98a}.gold{color:var(--gold2)}.tag{display:inline-block;padding:3px 6px;border-radius:99px;border:1px solid #41444a;color:#aaa;font-size:9px}.toolbar{display:flex;gap:6px;flex-wrap:wrap}
-.split{display:grid;grid-template-columns:1fr 1fr;gap:8px}.triple{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.list{display:flex;flex-direction:column;gap:5px}.item{border:1px solid #2c2f33;background:#181a1d;border-radius:7px;padding:8px;cursor:pointer}.item:hover{border-color:#555}.item .topline{display:flex;justify-content:space-between}
-.meter{height:5px;background:#2b2d31;border-radius:5px;overflow:hidden;margin-top:5px}.meter i{display:block;height:100%;background:#a58a59}.detailTitle{font-family:Georgia,serif;font-size:18px;margin-bottom:2px}.detailSub{font-size:10px;color:#858890}.statgrid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:10px}
-.mini{padding:7px;background:#1b1d20;border:1px solid #2b2e32;border-radius:6px}.mini b{display:block;font-size:13px}.mini span{font-size:9px;color:#858890}.section{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#8c8f96;margin:12px 0 6px}
-canvas{width:100%;height:270px;background:#111315;border:1px solid #292c30;border-radius:7px;display:block}.eventfeed{max-height:250px;overflow:auto}.event{padding:7px 0;border-bottom:1px solid #292c30;font-size:10px;line-height:1.35}.event time{color:#777;font-size:9px;margin-right:5px}.inspectorEmpty{padding:35px 10px;text-align:center;color:#777;font-size:11px;line-height:1.5}
-@media(max-width:1000px){.layout{grid-template-columns:66px minmax(0,1fr)}.sidebar{padding:7px}.sidehead,.nav span,.tip{display:none}.nav button{text-align:center;font-size:17px}.right{display:none}.cards{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:650px){.layout{display:block}.sidebar{border-right:0;border-bottom:1px solid var(--line);overflow:auto}.nav{flex-direction:row;overflow:auto}.nav button{min-width:78px;font-size:10px}.resources{display:none}.top{justify-content:space-between}.controls{margin-left:auto}.main{padding:9px}.split,.triple{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,1fr)}.map{height:260px}}
-</style></head><body>
-<header id="gamebar"><div class="top"><div class="crest">✦</div><div><div class="title">The Living Realm</div><div class="subtitle">Medieval Simulation • Observer's Court</div></div>
-<div class="resources"><div class="res"><span>DATE</span><b id="topDate">—</b></div><div class="res"><span>PEOPLE</span><b id="topPop">—</b></div><div class="res"><span>TREASURY</span><b id="topTreasury">—</b></div><div class="res"><span>GRAIN</span><b id="topGrain">—</b></div><div class="res"><span>PRICE</span><b id="topPrice">—</b></div></div>
-<div class="controls"><button onclick="step(1)">1d</button><button onclick="step(7)">1w</button><button onclick="step(30)">1m</button><button class="gold" onclick="run()" id="run">▶</button></div></div></header>
-<div class="layout"><aside class="sidebar"><div class="sidehead">Court</div><div class="nav">
-<button class="active" onclick="uiTab('realm',this)">🏰 <span>Realm</span></button><button onclick="uiTab('economy',this)">⚒ <span>Economy</span></button><button onclick="uiTab('households',this)">⌂ <span>Households</span></button><button onclick="uiTab('people',this)">♙ <span>People</span></button><button onclick="uiTab('organizations',this)">⚑ <span>Factions</span></button><button onclick="uiTab('crime',this)">⚔ <span>Crime</span></button><button onclick="uiTab('analytics',this)">◈ <span>Chronicle</span></button>
-</div><div class="tip">Click through the realm like an RTS observer. Select a household or resident and the right-hand inspector exposes the underlying simulation state.</div></aside>
-<main class="main"><div id="mainContent"></div></main><aside class="right"><div id="inspector"></div></aside></div>
-<script>
-/*
- MEDIEVAL SIMULATION V2
- Core principle: markets are accounting systems, not decorative counters.
- Every unit sold is removed from stock. Every purchase costs money.
- Unmet demand is recorded. Prices respond to inventory coverage + unmet demand.
- Food shortages reduce consumption, increase hunger, damage health, and can kill.
- Production is constrained by labor and inputs.
-*/
-const N=["Aldric","Agnes","Beatrice","Bernard","Cecily","Edmund","Eleanor","Geoffrey","Hugh","Isabel","John","Katherine","Martin","Matilda","Nicholas","Oswin","Peter","Robert","Simon","Thomas","Walter","William"];
-const S=["Ashford","Baker","Black","Cooper","Fletcher","Harper","Miller","Parker","Reed","Smith","Taylor","Turner","Ward","Webb","Wright"];
-const JOBS=["farmer","miller","baker","weaver","smith","carpenter","merchant","innkeeper","laborer","guard","priest","scribe","fisher"];
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#10110f">
+<title>The Living Realm — Economic Simulation V4</title>
+<style>
+:root{--bg:#0b0d0c;--panel:#151815eF;--panel2:#1b1e1a;--line:#30352e;--text:#ece8dc;--muted:#969b91;--gold:#c9a866;--green:#8aaa7b;--red:#c87969;--blue:#7899b9}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0b0d0c;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:12px}
+button,input,select{font:inherit}button{color:var(--text);background:#191c19;border:1px solid #3a4038;border-radius:7px;padding:7px 9px}button:hover{border-color:#706a56}button.gold{color:#e4cc91;border-color:#756242;background:#282319}input,select{background:#111411;color:#eee;border:1px solid #3a4038;border-radius:7px;padding:7px 9px;outline:none}
+#scene{position:absolute;inset:0}#hud{position:absolute;inset:0;pointer-events:none}.topbar{height:52px;background:#0e110ff2;border-bottom:1px solid #393a32;display:flex;align-items:center;gap:9px;padding:7px 10px;pointer-events:auto;backdrop-filter:blur(12px)}
+.crest{width:34px;height:34px;border:1px solid #76613d;border-radius:50%;display:grid;place-items:center;color:#dfc583;background:#211d14;font-weight:800}.brand{font-family:Georgia,serif;font-size:14px}.brand small{display:block;color:#747970;font:8px -apple-system,sans-serif;text-transform:uppercase;letter-spacing:1px;margin-top:1px}
+.res{display:flex;gap:14px;margin-left:auto}.res b{display:block;font-size:12px}.res span{display:block;color:#777d73;font-size:8px;text-transform:uppercase;letter-spacing:.6px}.time{display:flex;gap:4px;margin-left:8px}
+#left{position:absolute;left:10px;top:63px;width:185px;bottom:12px;pointer-events:auto;display:flex;flex-direction:column;gap:7px}.panel{background:var(--panel);border:1px solid #333830;border-radius:9px;box-shadow:0 7px 25px #0007;backdrop-filter:blur(10px)}.nav{padding:6px}.nav button{width:100%;text-align:left;border:0;background:transparent;color:#aaa;padding:9px;border-radius:6px}.nav button.active{background:#29261d;color:#e0c785;border:1px solid #514630}.legend{padding:9px;color:#858b82;font-size:9px;line-height:1.45}.legend b{color:#b8bbae}.mode{padding:7px;display:grid;grid-template-columns:1fr 1fr;gap:5px}.mode button{font-size:9px;padding:6px}
+#right{position:absolute;right:10px;top:63px;width:330px;bottom:12px;pointer-events:auto;overflow:auto}.inspector{padding:11px}.title{font-family:Georgia,serif;font-size:18px}.sub{color:#858b82;font-size:9px;margin-top:2px}.section{margin:12px 0 5px;color:#92978e;font-size:8px;letter-spacing:1px;text-transform:uppercase}.grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}.stat{background:#1b1e1a;border:1px solid #2d332c;border-radius:6px;padding:7px}.stat b{font-size:13px}.stat span{display:block;color:#7e847b;font-size:8px;margin-top:2px}.item{padding:7px 0;border-bottom:1px solid #292e29}.row{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid #282d28}.muted{color:#858b82}.good{color:var(--green)}.bad{color:var(--red)}.goldtxt{color:var(--gold)}
+#bottom{position:absolute;left:210px;right:350px;bottom:12px;pointer-events:auto}.timeline{padding:8px;display:flex;align-items:center;gap:6px}.timeline .fill{height:5px;background:#363b34;border-radius:5px;flex:1;overflow:hidden}.timeline i{display:block;height:100%;background:#a58b58;width:0}
+#view{position:absolute;left:205px;top:62px;right:345px;bottom:60px;pointer-events:none}.overlay{pointer-events:auto;padding:8px;max-width:480px}.overlay .panel{padding:9px}.overlay h3{font-family:Georgia,serif;margin:0 0 7px}.table{width:100%;border-collapse:collapse;font-size:10px}.table th,.table td{padding:6px 5px;border-bottom:1px solid #292e29;text-align:left;white-space:nowrap}.table th{font-size:7px;text-transform:uppercase;color:#7e847b;letter-spacing:.5px}.scroll{max-height:270px;overflow:auto}.click{cursor:pointer}.click:hover{background:#232720}.meter{height:5px;background:#2d322c;border-radius:4px;overflow:hidden;margin-top:4px}.meter i{display:block;height:100%;background:#a58b58}.flow{display:flex;align-items:center;gap:5px;overflow:auto;padding:3px 0}.node{min-width:88px;padding:7px;background:#1c201b;border:1px solid #333a31;border-radius:6px;text-align:center}.node b{display:block;color:#d2bd82}.arrow{color:#777;font-size:14px}.event{font-size:9px;line-height:1.35;padding:5px 0;border-bottom:1px solid #292e29}.search{display:flex;gap:5px;margin-bottom:7px}.search input{min-width:0;flex:1}
+#toast{position:absolute;left:50%;top:65px;transform:translateX(-50%);background:#181b18ee;border:1px solid #4a5046;padding:7px 10px;border-radius:7px;color:#ddd;opacity:0;transition:.25s;pointer-events:none}.cross{position:absolute;left:50%;top:50%;width:14px;height:14px;transform:translate(-50%,-50%);opacity:.35}.cross:before,.cross:after{content:"";position:absolute;background:#ddd}.cross:before{left:6px;top:0;width:1px;height:14px}.cross:after{top:6px;left:0;width:14px;height:1px}
+@media(max-width:900px){#left{width:58px}.nav button{font-size:0;text-align:center}.nav button:first-letter{font-size:17px}.legend{display:none}#view{left:69px;right:8px}.res{display:none}#right{width:300px;right:8px;top:auto;height:42vh;bottom:8px}.overlay{display:none}#bottom{left:69px;right:315px;bottom:8px}}
+@media(max-width:650px){.topbar{height:47px}.brand{display:none}.crest{width:30px;height:30px}.time{margin-left:auto}.controls button{padding:6px}.res{display:none}#left{left:6px;top:53px;width:48px;bottom:auto}.nav{padding:3px}.nav button{padding:8px 2px}#right{left:6px;right:6px;width:auto;height:39vh;bottom:5px;top:auto}.inspector{padding:9px}#bottom{left:58px;right:6px;bottom:calc(39vh + 10px)}#view{left:54px;right:5px;top:52px;bottom:calc(39vh + 65px)}.timeline{padding:5px}.timeline button{font-size:9px;padding:5px}.timeline .fill{display:none}}
+</style>
+</head>
+<body>
+<div id="scene"></div>
+<div id="hud">
+<header class="topbar">
+ <div class="crest">✦</div><div class="brand">The Living Realm<small>Economic Observer • V4</small></div>
+ <div class="res"><div><span>Year / Day</span><b id="date">1284 / 1</b></div><div><span>People</span><b id="pop">—</b></div><div><span>Grain</span><b id="grain">—</b></div><div><span>Grain Price</span><b id="gprice">—</b></div><div><span>Money</span><b id="money">—</b></div><div><span>Season</span><b id="season">—</b></div><div><span>Weather</span><b id="weather">—</b></div></div>
+ <div class="time"><button onclick="advance(1)">1d</button><button onclick="advance(7)">1w</button><button onclick="advance(30)">1m</button><button class="gold" onclick="toggleRun()" id="run">▶</button></div>
+</header>
+<aside id="left">
+ <div class="panel nav">
+  <button class="active" onclick="setMode('world',this)">🏰 World</button>
+  <button onclick="setMode('economy',this)">⚒ Economy</button>
+  <button onclick="setMode('supply',this)">⛓ Supply Chains</button>
+  <button onclick="setMode('households',this)">⌂ Households</button>
+  <button onclick="setMode('people',this)">♙ People</button>
+  <button onclick="setMode('organizations',this)">⚑ Factions</button>
+  <button onclick="setMode('chronicle',this)">◈ Chronicle</button>
+ </div>
+ <div class="panel mode"><button onclick="setCamera('overview')">Overlook</button><button onclick="setCamera('close')">Street</button><button onclick="setCamera('north')">North</button><button onclick="setCamera('south')">South</button></div>
+ <div class="panel legend"><b>Living map</b><br>Every building is attached to an economic actor. Fields feed mills; mills feed bakeries; bakeries feed households. Carts move goods between sites. Click a structure or person to inspect it.</div>
+</aside>
+<div id="view"></div>
+<aside id="right"><div class="panel inspector" id="inspector"></div></aside>
+<div id="bottom"><div class="panel timeline"><button onclick="advance(1)">Day</button><button onclick="advance(7)">Week</button><button onclick="advance(30)">Month</button><div class="fill"><i id="daybar"></i></div><span id="status" class="muted">Paused</span></div></div>
+<div id="toast"></div><div class="cross"></div>
+</div>
 
+<script type="module">
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.179.1/build/three.module.js";
+import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.179.1/examples/jsm/controls/OrbitControls.js";
+/* =========================
+   ECONOMIC SIMULATION V4
+   ========================= */
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)), r=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+const JOBS=["farmer","miller","baker","merchant","weaver","smith","carpenter","fisher","laborer","guard","priest","scribe"];
+const N=["Alden","Beatrice","Cedric","Edith","Gareth","Hugh","Isolde","Jon","Katherine","Martin","Nora","Otto","Peter","Robert","Sabine","Thomas","Ulric","William"];
+const S=["Ashford","Bennett","Clarke","Dane","Ellis","Fletcher","Graves","Hale","Kerr","Lang","Mason","North","Page","Reed","Stone","Turner","Vale"];
 const GOODS={
- grain:{base:1.00,producer:"farmer",food:true, calories:1, maxPrice:12},
- flour:{base:1.70,producer:"miller",input:"grain",inputQty:1.15,food:true,calories:.9,maxPrice:16},
- bread:{base:2.40,producer:"baker",input:"flour",inputQty:1.1,food:true,calories:.85,maxPrice:22},
- cloth:{base:4.50,producer:"weaver",input:"wool",inputQty:1,food:false,maxPrice:25},
- tools:{base:6.00,producer:"smith",input:"iron",inputQty:.35,food:false,maxPrice:35},
- wood:{base:1.80,producer:"carpenter",food:false,maxPrice:14},
- fish:{base:2.20,producer:"fisher",food:true,calories:1.15,maxPrice:18},
- wool:{base:1.40,producer:"farmer",food:false,maxPrice:12},
- iron:{base:3.80,producer:"smith",food:false,maxPrice:18}
+ grain:{base:1,max:12,producer:"farmer",cal:1,food:true},
+ flour:{base:1.55,max:18,producer:"miller",food:false},
+ bread:{base:2.15,max:25,producer:"baker",cal:1.1,food:true},
+ fish:{base:1.8,max:20,producer:"fisher",cal:1,food:true},
+ wool:{base:1.35,max:18,producer:"farmer",food:false},
+ cloth:{base:3.5,max:40,producer:"weaver",food:false},
+ wood:{base:.8,max:12,producer:"carpenter",food:false},
+ iron:{base:3.2,max:35,producer:"smith",food:false},
+ tools:{base:7,max:80,producer:"smith",food:false},
+ fuel:{base:1.1,max:15,producer:"carpenter",food:false}
 };
-
-let W,active="overview",timer=null;
-const r=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
-const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
-function npc(i){
-  const job=pick(JOBS);
-  return {
-    id:i,name:pick(N)+" "+pick(S),age:Math.floor(r(16,72)),job,
-    wealth:Math.max(2,r(8,80)),food:r(1.5,5),energy:r(.65,1),
-    health:r(.72,1),hunger:r(0,.25),risk:r(.05,.8),law:r(.2,.9),
-    productivity:r(.75,1.25),goal:pick(["earn wealth","raise family","gain status","protect household","avoid hunger","expand trade"]),
-    memory:[],knowledge:{},alive:true,employed:true,daysStarved:0
-  };
+const RECIPES={
+ mill:{input:"grain",inQty:1.15,output:"flour",outQty:1},
+ bakery:{input:"flour",inQty:1.1,output:"bread",outQty:1.2},
+ loom:{input:"wool",inQty:1,output:"cloth",outQty:1},
+ forge:{input:"iron",inQty:.35,output:"tools",outQty:1},
+ carpenter:{input:"wood",inQty:1,output:"fuel",outQty:.75}
+};
+let W, selected=null, mode="world", timer=null, camMode="overview", simDays=0;
+function money(x){return (x||0).toFixed(1)+"s"} function fmt(x){return Number(x||0).toLocaleString(undefined,{maximumFractionDigits:1})}
+function makePerson(id,house){
+ const job=pick(JOBS),age=Math.floor(r(16,70));
+ return {id,name:pick(N)+" "+pick(S),age,job,household:house,wealth:r(12,70),health:r(.78,1),hunger:r(.03,.2),energy:r(.7,1),risk:r(.05,.8),law:r(.35,.95),skill:r(.75,1.3),goal:pick(["security","wealth","status","family","trade"]),alive:true,daysStarved:0,inventory:{},knowledge:{},memory:[],employer:null};
+}
+function business(id,type,owner){
+ const cfg={farm:["grain",null],mill:["flour","grain"],bakery:["bread","flour"],fishery:["fish",null],loom:["cloth","wool"],forge:["tools","iron"],carpenter:["fuel","wood"],merchant:["trade",null]}[type];
+ return {id,name:type[0].toUpperCase()+type.slice(1)+" #"+id,type,owner, cash:r(80,260), inventory:{},targetStock:15,employees:[],inputOrder:0,output:cfg[0],input:cfg[1],capacity:r(.7,1.5),efficiency:r(.8,1.2),lastProfit:0,expectedProfit:0,confidence:.55,location:{x:0,z:0}};
 }
 function init(){
- W={
-   day:1,year:1284,people:[],markets:{},orgs:[
-    {name:"Merchants' Guild",type:"guild",members:34,power:.48},
-    {name:"Weavers' Guild",type:"guild",members:27,power:.31},
-    {name:"Town Watch",type:"state",members:42,power:.55}
-   ],
-   crimes:[],events:[],treasury:850,tax:.08,running:false,
-   shortageDays:0,totalFoodConsumed:0,totalFoodUnmet:0
- };
- for(let i=0;i<1200;i++)W.people.push(npc(i));
-
- for(const g in GOODS){
-   const base=GOODS[g].base;
-   W.markets[g]={
-     price:base,stock:g==="grain"?850:r(250,650),
-     demand:0,sales:0,unmet:0,production:0,
-     moneySpent:0,prevStock:0,daysOfSupply:30
-   };
+ W={year:1284,day:1,people:[],households:[],businesses:[],markets:{},orders:[],carts:[],events:[],treasury:900,tax:.08,priceHistory:{},populationHistory:[],running:false};
+ for(let g in GOODS)W.markets[g]={price:GOODS[g].base,stock:0,demand:0,sales:0,unmet:0,production:0,orders:0,daysSupply:0};
+ for(let h=0;h<360;h++){
+   const house={id:h,name:"Household "+(h+1),cash:r(18,100),food:r(1,4),members:[],rent:r(.08,.35),savingsTarget:r(20,100),confidence:r(.35,.8)};
+   W.households.push(house);
+   const n=Math.floor(r(2,5));
+   for(let j=0;j<n;j++){let p=makePerson(W.people.length,h);house.members.push(p.id);W.people.push(p)}
  }
- // Give producers and merchants slightly more working capital.
- W.people.forEach(p=>{if(["farmer","miller","baker","merchant"].includes(p.job))p.wealth+=r(10,30)});
- log("V2 begins: inventories, purchases, unmet demand, production inputs and starvation are economically connected.");
- render();
+ const types=["farm","farm","farm","farm","mill","bakery","fishery","loom","forge","carpenter","merchant"];
+ let bid=0;
+ for(const type of types)for(let i=0;i<(type==="farm"?6:2);i++){
+   const owner=pick(W.people);const b=business(bid++,type,owner.id);b.location=siteFor(type,bid);W.businesses.push(b);owner.employer=b.id; b.employees=[owner.id];
+ }
+ // Add laborers to businesses based on production capacity.
+ for(const b of W.businesses){
+   const needed=b.type==="farm"?7:b.type==="mill"?3:b.type==="bakery"?4:b.type==="merchant"?2:3;
+   const candidates=W.people.filter(p=>p.alive&&!p.employer).sort((a,c)=>c.skill-a.skill).slice(0,needed);
+   candidates.forEach(p=>{p.employer=b.id;b.employees.push(p.id)});
+ }
+ // Initial stocks deliberately create a functioning but fragile chain.
+ for(const g in GOODS)W.markets[g].stock=g==="grain"?1100:g==="flour"?110:g==="bread"?120:g==="fish"?160:g==="wool"?100:g==="iron"?90:g==="wood"?180:g==="fuel"?80:g==="tools"?35:60;
+ for(const g in GOODS)W.priceHistory[g]=[];
+ for(const b of W.businesses){if(b.input)b.inventory[b.input]=r(4,15);b.inventory[b.output]=r(3,12)}
+ log("V4 founded: firms now forecast margins, procure inputs, produce from physical inventories and compete for scarce resources.");
 }
-function log(x){
- W.events.unshift("["+W.year+" / day "+W.day+"] "+x);
- if(W.events.length>300)W.events.pop();
+function siteFor(type,i){
+ const centers={farm:[-28,-18],mill:[-5,-10],bakery:[8,-7],fishery:[27,13],loom:[-15,18],forge:[16,20],carpenter:[4,27],merchant:[18,-20]};
+ const c=centers[type]||[0,0];return{x:c[0]+r(-5,5),z:c[1]+r(-5,5)};
 }
-function wageFor(job){
- return {farmer:1.05,miller:1.35,baker:1.4,weaver:1.3,smith:1.6,carpenter:1.25,merchant:1.1,innkeeper:1.0,laborer:.8,guard:.95,priest:.9,scribe:1.0,fisher:1.05}[job]||.8;
+function log(x){W.events.unshift(`[${W.year}/${W.day}] ${x}`);if(W.events.length>250)W.events.pop()}
+function expectedInputCost(b){
+ if(!b.input)return 0;return W.markets[b.input].price*(RECIPES[{mill:"mill",bakery:"bakery",loom:"loom",forge:"forge",carpenter:"carpenter"}[b.type]]?.inQty||1);
 }
-function productionStep(){
-  // Primary production first.
-  const counts={}; W.people.forEach(p=>counts[p.job]=(counts[p.job]||0)+1);
-  // Reset daily production.
-  for(const g in GOODS)W.markets[g].production=0;
-
-  const primary={
-    farmer:[["grain",.72],["wool",.08]],
-    fisher:[["fish",.48]],
-    carpenter:[["wood",.45]],
-    smith:[["iron",.12]]
-  };
-  for(const job in primary){
-    for(const p of W.people.filter(x=>x.job===job && x.alive)){
-      for(const [g,q] of primary[job]){
-        const out=q*p.productivity*r(.85,1.15);
-        W.markets[g].stock+=out;
-        W.markets[g].production+=out;
-        p.wealth+=wageFor(job)*.45; // producer earns from sale later; this is a subsistence/working payment
-      }
-    }
-  }
-
-  // Processors can only produce if input inventory exists.
-  const processors=[
-    ["miller","flour","grain",1.15,.62],
-    ["baker","bread","flour",1.10,.58],
-    ["weaver","cloth","wool",1.00,.24],
-    ["smith","tools","iron",.35,.11]
-  ];
-  for(const [job,outGood,inGood,inputPerUnit,outPerWorker] of processors){
-    for(const p of W.people.filter(x=>x.job===job && x.alive)){
-      const desired=outPerWorker*p.productivity*r(.9,1.1);
-      const possible=W.markets[inGood].stock/inputPerUnit;
-      const actual=Math.min(desired,possible);
-      W.markets[inGood].stock-=actual*inputPerUnit;
-      W.markets[outGood].stock+=actual;
-      W.markets[outGood].production+=actual;
-      if(actual<desired*.7 && desired>0.01){
-        p.memory.push({type:"input shortage",good:inGood,day:W.day});
-      }
-      // Processor gets a wage, but the business also pays for inputs through inventory.
-      p.wealth+=wageFor(job)*.45;
-    }
-  }
+function expectedRevenue(b){
+ if(!b.output)return 0;const rec=RECIPES[{mill:"mill",bakery:"bakery",loom:"loom",forge:"forge",carpenter:"carpenter"}[b.type]];return W.markets[b.output].price*(rec?.outQty||1);
 }
-function demandProfile(p){
-  // Desired food is hunger-dependent. Adults need ~0.13 food units/day.
-  const foodNeed=.125*(p.age<18?.75:p.age>60?.9:1);
-  const urgency=1+3*p.hunger;
-  const desiredFood=foodNeed*urgency;
-  const nonFood=.018*(1+(p.goal==="gain status"?.6:0));
-  return {food:desiredFood,nonFood};
+function hireFire(){
+ // Firms are economically intelligent: they hire when expected contribution margin
+ // exceeds wage, and shed labor when margins remain negative.
+ for(const b of W.businesses){
+   if(b.type==="farm"||b.type==="fishery"||b.type==="merchant")continue;
+   const margin=expectedRevenue(b)-expectedInputCost(b);
+   b.expectedProfit=margin*b.capacity;
+   const wage=1.0+W.markets[b.output].price*.035;
+   if(b.expectedProfit>wage*1.5 && b.employees.length<6){
+     const cand=W.people.filter(p=>p.alive&&!p.employer).sort((a,c)=>c.skill-a.skill)[0];
+     if(cand){cand.employer=b.id;b.employees.push(cand.id);log(`${b.name} hires ${cand.name} as demand improves.`)}
+   }
+   if(b.expectedProfit<wage*.35 && b.employees.length>1){
+     const pid=b.employees.pop(),p=W.people.find(x=>x.id===pid);if(p)p.employer=null;
+     log(`${b.name} reduces labor after persistent weak margins.`)
+   }
+ }
 }
-function buyGood(g,desired,p){
-  const m=W.markets[g];
-  if(desired<=0 || m.stock<=0 || p.wealth<=0)return 0;
-  const affordable=p.wealth/m.price;
-  const qty=Math.min(desired,m.stock,affordable);
-  if(qty<=0)return 0;
-  m.stock-=qty;
-  m.sales+=qty;
-  m.moneySpent+=qty*m.price;
-  p.wealth-=qty*m.price;
-  return qty;
+function businessProduction(){
+ for(const g in W.markets)W.markets[g].production=0;
+ for(const b of W.businesses){
+   if(!b.output)continue;
+   const rec=RECIPES[{mill:"mill",bakery:"bakery",loom:"loom",forge:"forge",carpenter:"carpenter"}[b.type]];
+   let labor=Math.max(.2,b.employees.length/3);
+   if(b.type==="farm"){
+     const q=b.capacity*b.efficiency*(1+r(.65,1.25));W.markets.grain.stock+=q;W.markets.grain.production+=q;b.cash+=q*W.markets.grain.price*.55;continue;
+   }
+   if(b.type==="fishery"){
+     const q=b.capacity*b.efficiency*(1+r(.7,1.2));W.markets.fish.stock+=q;W.markets.fish.production+=q;b.cash+=q*W.markets.fish.price*.55;continue;
+   }
+   const inputNeed=rec.inQty*labor*b.capacity;
+   const available=W.markets[rec.input].stock;
+   const actualIn=Math.min(inputNeed,available);
+   const units=actualIn/rec.inQty;
+   const out=units*rec.outQty*b.efficiency;
+   if(actualIn>0){W.markets[rec.input].stock-=actualIn;W.markets[b.output].stock+=out;W.markets[b.output].production+=out;b.inventory[rec.input]=(b.inventory[rec.input]||0)+actualIn}
+   if(units<inputNeed/rec.inQty*.65){b.confidence=clamp(b.confidence-.025,.05,1);if(W.day%5===0)log(`${b.name} cannot run at capacity: ${rec.input} is scarce.`)}
+   else b.confidence=clamp(b.confidence+.006,.05,1);
+   b.inventory[b.output]=(b.inventory[b.output]||0)+out;
+ }
 }
-function marketDemandStep(){
-  for(const g in GOODS){
-    const m=W.markets[g];
-    m.prevStock=m.stock;m.demand=0;m.sales=0;m.unmet=0;m.moneySpent=0;
-  }
-
-  let foodWanted=0,foodBought=0;
-  // Residents buy food first. They choose among available food based on price,
-  // so a shortage in one food can shift demand to another.
-  const foodGoods=["bread","grain","fish"].filter(g=>W.markets[g]);
-  for(const p of W.people){
-    if(!p.alive)continue;
-    const d=demandProfile(p);
-    foodWanted+=d.food;
-    let remaining=d.food;
-
-    const choices=foodGoods.slice().sort((a,b)=>W.markets[a].price-W.markets[b].price);
-    for(const g of choices){
-      if(remaining<=0)break;
-      const bought=buyGood(g,remaining,p);
-      remaining-=bought*GOODS[g].calories;
-      foodBought+=bought*GOODS[g].calories;
-    }
-    const actualFood=Math.max(0,d.food-remaining);
-    p.food=clamp(p.food+actualFood,0,5);
-    p.hunger=clamp(p.hunger+(d.food-actualFood)*.75-actualFood*.08,0,2);
-    if(actualFood<d.food*.85)p.daysStarved++;
-    else p.daysStarved=Math.max(0,p.daysStarved-1);
-
-    // Basic non-food consumption: cloth/tools/wood. Not essential for survival,
-    // but shortages affect living standards and productive capacity later.
-    const nonFood=d.nonFood;
-    const preferred=pick(["cloth","wood","tools"]);
-    buyGood(preferred,nonFood,p);
-  }
-
-  for(const g in GOODS){
-    const m=W.markets[g];
-    // Demand is actual desired quantity, not an arbitrary multiple of consumption.
-    if(GOODS[g].food){
-      // Reconstruct food demand from the market-clearing pass.
-      m.demand=foodWanted*(1/(foodGoods.length||1));
-    } else {
-      m.demand=W.people.length*.018;
-    }
-    m.unmet=Math.max(0,m.demand-m.sales);
-  }
-  W.totalFoodConsumed+=foodBought;
-  W.totalFoodUnmet+=Math.max(0,foodWanted-foodBought);
-  return {foodWanted,foodBought};
+function foodNeed(p){return .105*(p.age<18?.72:p.age>60?.9:1)}
+function householdDecision(h){
+ const members=h.members.map(id=>W.people.find(p=>p.id===id)).filter(p=>p&&p.alive);
+ if(!members.length)return;
+ let desired=members.reduce((s,p)=>s+foodNeed(p)*(1+2.8*p.hunger),0);
+ const foods=["bread","grain","fish"].sort((a,b)=>W.markets[a].price/(GOODS[a].cal||1)-W.markets[b].price/(GOODS[b].cal||1));
+ let budget=Math.max(0,h.cash*.28 + Math.max(0,h.cash-h.savingsTarget)*.25);
+ let got=0;
+ for(const g of foods){
+   const m=W.markets[g],cal=GOODS[g].cal||1;
+   const want=Math.max(0,(desired-got)/cal);
+   const affordable=budget/m.price;
+   const qty=Math.min(want,m.stock,affordable);
+   if(qty>0){m.stock-=qty;m.sales+=qty;m.demand+=want;m.unmet+=Math.max(0,want-qty);m.orders+=want;const cost=qty*m.price;budget-=cost;h.cash-=cost;got+=qty*cal}
+ }
+ const ration=clamp(got/Math.max(.01,desired),0,1);
+ members.forEach(p=>{p.hunger=clamp(p.hunger+(1-ration)*.65-ration*.09,0,2);p.energy=clamp(p.energy+.03,0,1);p.food=ration});
+ // Households save/invest according to confidence and goals.
+ if(h.cash>h.savingsTarget && h.confidence>.5){h.savingsTarget*=1.001}
+ else if(h.cash<h.savingsTarget*.35)h.confidence=clamp(h.confidence-.015,.05,1);
 }
-function updatePrices(){
-  for(const g in GOODS){
-    const m=W.markets[g],spec=GOODS[g];
-    const dailyDemand=Math.max(.1,m.demand);
-    const coverage=m.stock/dailyDemand;
-    m.daysOfSupply=coverage;
-
-    // Strong response to shortages. Excess inventory pushes price down.
-    const shortagePressure=clamp((1.8-coverage)/1.8,-1,1);
-    const unmetPressure=clamp(m.unmet/Math.max(1,dailyDemand),0,1);
-    let change=.045*shortagePressure + .055*unmetPressure;
-
-    // Persistent surplus creates discounting.
-    if(coverage>45)change-=.035;
-    else if(coverage>25)change-=.015;
-
-    // Prices are sticky but respond materially over time.
-    change+=r(-.006,.006);
-    m.price=clamp(m.price*(1+change),spec.base*.30,spec.maxPrice);
-
-    // If the market is completely empty, price jumps faster next day.
-    if(m.stock<.001 && m.unmet>0)m.price=clamp(m.price*1.08,spec.base*.30,spec.maxPrice);
-  }
+function businessProcurement(){
+ // Businesses submit rational input orders based on expected sales, current stock,
+ // price, cash and capacity. Merchants can satisfy orders from regional stock.
+ for(const b of W.businesses){
+   if(!b.input)continue;
+   const rec=RECIPES[{mill:"mill",bakery:"bakery",loom:"loom",forge:"forge",carpenter:"carpenter"}[b.type]];
+   const labor=Math.max(1,b.employees.length/3),desired=rec.inQty*labor*b.capacity;
+   const onHand=b.inventory[b.input]||0;
+   const need=Math.max(0,desired*2-onHand);
+   if(need>0 && b.cash>need*W.markets[b.input].price*.55){
+     W.orders.push({business:b.id,good:b.input,qty:need,limit:W.markets[b.input].price*1.12,age:0});
+     b.inputOrder=need;
+   }
+ }
+ // Match orders to available market stock; firms pay the market and cash leaves.
+ for(const o of W.orders){
+   const b=W.businesses.find(x=>x.id===o.business);if(!b)continue;
+   const m=W.markets[o.good];const qty=Math.min(o.qty,m.stock,b.cash/o.limit);
+   if(qty>0){m.stock-=qty;m.sales+=qty;m.demand+=o.qty;m.moneySpent=(m.moneySpent||0)+qty*m.price;b.cash-=qty*m.price;b.inventory[o.good]=(b.inventory[o.good]||0)+qty}
+ }
+ W.orders=[];
 }
-function distributeProducerRevenue(){
-  // Buyers' money is already removed from residents. Distribute most of market
-  // spending to the occupations that produced the sold good.
-  for(const g in GOODS){
-    const m=W.markets[g],producer=GOODS[g].producer;
-    const workers=W.people.filter(p=>p.job===producer && p.alive);
-    if(!workers.length)continue;
-    const payout=m.moneySpent*.72;
-    const each=payout/workers.length;
-    workers.forEach(p=>p.wealth+=each);
-    W.treasury+=m.moneySpent*W.tax*.04;
-  }
+function merchants(){
+ for(const b of W.businesses.filter(x=>x.type==="merchant")){
+   const prices=Object.entries(W.markets).sort((a,b)=>b[1].price-a[1].price);
+   if(prices.length<2)continue;
+   const high=prices[0][0],low=prices[prices.length-1][0];
+   if(W.markets[high].unmet>0 && W.markets[low].stock>W.markets[low].demand*2){
+     const qty=Math.min(8,W.markets[low].stock*.05);
+     if(qty>0){W.markets[low].stock-=qty;W.markets[high].stock+=qty;log(`${b.name} arbitrages ${low} toward the high-price ${high} market.`)}
+   }
+ }
 }
-function healthStep(){
-  let deaths=0;
-  const foodShort=W.markets.grain.stock+W.markets.bread.stock+W.markets.fish.stock<Math.max(1,W.people.length*.25);
-  if(foodShort)W.shortageDays++;else W.shortageDays=Math.max(0,W.shortageDays-1);
-
-  for(const p of W.people){
-    if(!p.alive)continue;
-    p.energy=clamp(p.energy-r(.008,.018),0,1);
-    p.energy=clamp(p.energy+.035,0,1);
-
-    // Hunger is a real physiological state. Sustained starvation damages health.
-    if(p.hunger>.25)p.health-=.0015*(p.hunger*2);
-    if(p.hunger>.65)p.health-=.004*(1+p.hunger);
-    if(p.daysStarved>3)p.health-=.002;
-    if(p.hunger<.12)p.health+=.0005;
-
-    // Aging.
-    if(p.age>55)p.health-=.00025;
-    if(p.health<=0){
-      p.alive=false;deaths++;
-    }
-  }
-  if(deaths)log(deaths+" residents died from disease, age, or prolonged deprivation.");
-  if(foodShort && W.day%3===0)log("FOOD SHORTAGE: aggregate food inventories are critically low.");
+function prices(){
+ for(const g in GOODS){
+   const m=W.markets[g],base=GOODS[g].base,d=Math.max(.1,m.demand),coverage=m.stock/d;
+   m.daysSupply=coverage;
+   const pressure=clamp((3-coverage)/3,-1,1);
+   const unmet=clamp(m.unmet/d,0,2);
+   let change=.035*pressure+.04*unmet;
+   if(coverage>35)change-=.022;
+   if(m.stock<.001&&m.unmet>0)change+=.09;
+   m.price=clamp(m.price*(1+change+r(-.003,.003)),base*.35,GOODS[g].max);
+   W.priceHistory[g].push(m.price);if(W.priceHistory[g].length>240)W.priceHistory[g].shift();
+ }
 }
-function crime(p){
-  const type=pick(["theft","smuggling","fraud","burglary"]),value=Math.round(r(2,18));
-  const detected=Math.random()<(.08+(1-p.law)*.22);
-  W.crimes.unshift({year:W.year,day:W.day,type,actor:p.name,value,detected});
-  p.memory.push({type:"crime",day:W.day});
-  if(detected){p.law=Math.max(.05,p.law-.04);log(p.name+" was caught attempting "+type+".");}
-  else{p.wealth+=value;log(type+" occurred; the culprit escaped detection.");}
-  if(type==="theft"&&!W.orgs.some(o=>o.type==="criminal"))
-    W.orgs.push({name:"Northside Thieves",type:"criminal",members:5,power:.08});
+function distributeIncome(){
+ for(const b of W.businesses){
+   const gross=(W.markets[b.output]?.sales||0)*W.markets[b.output].price;
+   const wage=b.employees.length*(.65+(W.markets[b.output]?.price||1)*.08);
+   b.cash+=gross*.45-wage;
+   b.lastProfit=gross*.45-wage-(b.inputOrder*(W.markets[b.input]?.price||0)*.3);
+   b.employees.forEach(id=>{const p=W.people.find(x=>x.id===id);if(p)p.wealth+=Math.max(.1,wage/Math.max(1,b.employees.length))})
+ }
+}
+function mortality(){
+ let deaths=0;
+ for(const p of W.people){
+   if(!p.alive)continue;
+   if(p.hunger>.55)p.health-=.003*p.hunger;
+   if(p.hunger>.9)p.health-=.008*p.hunger;
+   if(p.hunger>.72)p.daysStarved++;else p.daysStarved=Math.max(0,p.daysStarved-1);
+   if(p.daysStarved>12)p.health-=.012;
+   if(p.age>58)p.health-=.0005;
+   if(p.health<=0){p.alive=false;deaths++}
+ }
+ if(deaths)log(`${deaths} residents died after sustained physiological deprivation or age-related decline.`);
+ // Remove dead from household membership only; preserve records for inspector.
+ for(const h of W.households)h.members=h.members.filter(id=>{const p=W.people.find(x=>x.id===id);return p&&p.alive});
+}
+function births(){
+ if(W.day!==1)return;
+ const eligible=W.households.filter(h=>h.members.length>=2&&h.cash>8&&Math.random()<.012);
+ for(const h of eligible.slice(0,Math.max(0,Math.floor(W.people.length*.004)))){
+   const p=makePerson(W.people.length,h.id);p.age=0;p.job="laborer";p.wealth=0;p.hunger=.1;p.health=.9;p.employer=null;
+   W.people.push(p);h.members.push(p.id);log(`A child is born into ${h.name}.`);
+ }
+}
+function crime(){
+ for(const p of W.people){
+   if(!p.alive||p.hunger<.75)continue;
+   const desperation=p.hunger*.6+(p.wealth<3?.25:0);
+   if(Math.random()<desperation*.018){
+     const value=r(2,14),caught=Math.random()<.12+(1-p.law)*.18;
+     W.events.unshift(`[${W.year}/${W.day}] ${p.name} commits theft${caught?" and is caught":" and escapes detection"}.`);
+     p.memory.push({type:"crime",day:W.day});if(!caught)p.wealth+=value;else p.law=clamp(p.law-.05,.05,1);
+   }
+ }
 }
 function tick(){
-  W.day++;
-  if(W.day>365){W.day=1;W.year++;annual();}
+ W.day++;if(W.day>365){W.day=1;W.year++}
+ for(const g in W.markets){const m=W.markets[g];m.demand=0;m.sales=0;m.unmet=0;m.moneySpent=0;m.orders=0}
+ businessProduction();businessProcurement();
+ for(const h of W.households)householdDecision(h);
+ merchants();hireFire();distributeIncome();prices();mortality();births();crime();
+ // attention-limited economic knowledge
+ for(const p of W.people.filter(x=>x.alive)){
+   if(Math.random()<.035){const g=pick(["grain","flour","bread","fish"]);p.knowledge[g]={price:W.markets[g].price,age:0};p.memory.push({type:"market price",good:g,value:W.markets[g].price,day:W.day});if(p.memory.length>20)p.memory.shift()}
+   for(const k in p.knowledge){p.knowledge[k].age++;if(p.knowledge[k].age>45)delete p.knowledge[k]}
+ }
+ simDays++;
+ if(W.day%7===0)W.populationHistory.push(W.people.filter(p=>p.alive).length);
+}
+function advance(n){for(let i=0;i<n;i++)tick();renderAll()}
+function toggleRun(){W.running=!W.running;document.getElementById("run").textContent=W.running?"⏸":"▶";document.getElementById("status").textContent=W.running?"Running":"Paused";if(W.running&&!timer)timer=setInterval(()=>{for(let i=0;i<2;i++)tick();renderAll()},350);if(!W.running&&timer){clearInterval(timer);timer=null}}
 
-  productionStep();
-  const flow=marketDemandStep();
-  distributeProducerRevenue();
-  updatePrices();
+/* =========================
+   V5 SPATIAL ECONOMY
+   ========================= */
+const SEASONS=["Winter","Spring","Summer","Autumn"];
+const GOODS_V5={...GOODS};
+Object.assign(GOODS_V5,{
+  grain:{...GOODS.grain,spoil:.004,bulk:1,season:"Summer"},
+  flour:{...GOODS.flour,spoil:.012,bulk:.8},
+  bread:{...GOODS.bread,spoil:.045,bulk:.7},
+  fish:{...GOODS.fish,spoil:.025,bulk:.7},
+  wool:{...GOODS.wool,spoil:.006,bulk:1},
+  cloth:{...GOODS.cloth,spoil:.001,bulk:.55},
+  wood:{...GOODS.wood,spoil:.002,bulk:1.2},
+  iron:{...GOODS.iron,spoil:0,bulk:1.3},
+  tools:{...GOODS.tools,spoil:.001,bulk:.8},
+  fuel:{...GOODS.fuel,spoil:.01,bulk:1}
+});
+const REGIONS=[
+ {id:0,name:"Northfields",cx:-25,cz:-19,weather:0,roads:[1,2]},
+ {id:1,name:"Mill Vale",cx:-5,cz:-9,weather:0,roads:[0,2,3]},
+ {id:2,name:"Southroad",cx:15,cz:-18,weather:0,roads:[0,1,4]},
+ {id:3,name:"River Ward",cx:27,cz:14,weather:.15,roads:[1,4]},
+ {id:4,name:"East Downs",cx:18,cz:24,weather:.05,roads:[2,3]}
+];
+const V5RECIPES={
+ mill:{input:"grain",inQty:1.15,output:"flour",outQty:1},
+ bakery:{input:"flour",inQty:1.1,output:"bread",outQty:1.2},
+ loom:{input:"wool",inQty:1,output:"cloth",outQty:1},
+ forge:{input:"iron",inQty:.35,output:"tools",outQty:1},
+ carpenter:{input:"wood",inQty:1,output:"fuel",outQty:.75}
+};
+function season(){return SEASONS[Math.floor(((W.day-1)%365)/91.25)]}
+function regionFor(x,z){let best=REGIONS[0],bd=1e9;for(const q of REGIONS){const d=(x-q.cx)**2+(z-q.cz)**2;if(d<bd){bd=d;best=q}}return best.id}
+function distance(a,b){return Math.hypot(a.x-b.x,a.z-b.z)}
+function roadDistance(a,b){return distance(a,b)*1.18}
+function transportCost(qty,good,from,to){
+ const d=roadDistance(from,to), bulk=(GOODS_V5[good]?.bulk||1);
+ return d*.018*qty*bulk + qty*.006;
+}
+function initV5(){
+ W.regions=REGIONS.map(r=>({...r,markets:{},weather:"clear",weatherSeverity:0}));
+ for(const r of W.regions)for(const g in GOODS_V5)r.markets[g]={stock:0,price:GOODS_V5[g].base,demand:0,unmet:0,sales:0,production:0};
+ W.businesses.forEach((b,i)=>{
+   b.region=regionFor(b.location.x,b.location.z);b.inventory={};b.credit=0;b.debt=0;b.rent=.25;b.land=0;b.bankrupt=false;b.wageBase=1;
+   if(b.type==="farm")b.land=10+r(0,8);
+   const rm=W.regions[b.region].markets;
+   rm[b.output].stock+=r(5,15);
+   b.inventory[b.output]=r(2,8);
+   if(b.input){rm[b.input].stock+=r(3,8);b.inventory[b.input]=r(2,7)}
+ });
+ W.households.forEach(h=>{
+   const p=W.people.find(p=>p.household===h.id);h.region=p?.employer!=null?W.businesses.find(b=>b.id===p.employer)?.region:Math.floor(Math.random()*REGIONS.length);
+   h.debt=0;h.creditLimit=r(5,30);h.rent=Math.max(.12,h.rent||r(.08,.35));h.foodBuffer=r(.6,2.2);
+ });
+ W.people.forEach(p=>{p.wage=0;p.debt=0;p.cashflow=0;p.region=W.households[p.household]?.region||0});
+ W.carts=[];W.loans=[];W.tradeLog=[];W.bankruptcies=[];W.wageHistory=[];W.localPriceHistory={};
+ log("V5 spatial economy initialized: goods now move through physical regional markets with transport costs, spoilage and local price formation.");
+}
+function weatherTick(){
+ const base=Math.sin((W.day/365)*Math.PI*2);
+ for(const r of W.regions){
+   const x=Math.random();
+   if(x<.06){r.weather=pick(["storm","drought","frost","flood"]);r.weatherSeverity=r(.45,1)}
+   else if(x<.18){r.weather=pick(["rain","dry","wind"]);r.weatherSeverity=r(.15,.5)}
+   else {r.weather="clear";r.weatherSeverity=r(0,.15)}
+ }
+}
+function localMarketStep(){
+ for(const r of W.regions)for(const g in r.markets){
+   const m=r.markets[g];m.demand=0;m.sales=0;m.unmet=0;m.production=0;
+ }
+}
+function localPriceUpdate(){
+ for(const r of W.regions)for(const g in GOODS_V5){
+   const m=r.markets[g],base=GOODS_V5[g].base,d=Math.max(.05,m.demand),coverage=m.stock/d;
+   let pressure=clamp((4-coverage)/4,-1,1), change=.045*pressure+.05*clamp(m.unmet/d,0,2);
+   if(coverage>40)change-=.018;
+   if(m.stock<.001&&m.unmet>0)change+=.12;
+   m.price=clamp(m.price*(1+change+r(-.004,.004)),base*.25,GOODS_V5[g].max*1.35);
+ }
+}
+function farmOutput(b){
+ const rgn=W.regions[b.region], weatherFactor={clear:1,rain:1.05,storm:.55,drought:.45,frost:.4,flood:.55,wind:.9,dry:.8}[rgn.weather]||1;
+ const seasonFactor=season()==="Summer"?1.3:season()==="Autumn"?1.05:season()==="Spring"?0.75:.35;
+ const tools=W.regions[b.region].markets.tools.stock;
+ const toolFactor=clamp(0.7+tools/(tools+12),.7,1.35);
+ const q=b.capacity*b.efficiency*(1+r(.75,1.25))*weatherFactor*seasonFactor*toolFactor*(b.land/14);
+ const m=rgn.markets.grain;m.stock+=q;m.production+=q;b.cash+=q*m.price*.42;return q;
+}
+function genericOutput(b){
+ const rec=V5RECIPES[b.type];if(!rec)return 0;
+ const rgn=W.regions[b.region],mIn=rgn.markets[rec.input],mOut=rgn.markets[rec.output];
+ const labor=Math.max(.25,b.employees.length/3);
+ const desired=rec.inQty*labor*b.capacity;
+ const owned=b.inventory[rec.input]||0;
+ const use=Math.min(desired,owned,mIn.stock+owned);
+ if(use<=0)return 0;
+ b.inventory[rec.input]=Math.max(0,owned-use);
+ const units=use/rec.inQty,out=units*rec.outQty*b.efficiency;
+ mOut.stock+=out;mOut.production+=out;b.inventory[rec.output]=(b.inventory[rec.output]||0)+out;
+ return out;
+}
+function v5Production(){
+ for(const b of W.businesses.filter(x=>!x.bankrupt)){
+   if(b.type==="farm")farmOutput(b);
+   else if(b.type==="fishery"){
+     const rg=W.regions[b.region], weatherFactor=rg.weather==="storm"||rg.weather==="flood"?.55:1;
+     const q=b.capacity*b.efficiency*r(.7,1.2)*weatherFactor;rg.markets.fish.stock+=q;rg.markets.fish.production+=q;b.cash+=q*rg.markets.fish.price*.45;
+   } else if(V5RECIPES[b.type])genericOutput(b);
+ }
+}
+function createCart(owner,good,qty,from,to,orderId=null){
+ const a=REGIONS[from],b=REGIONS[to],cost=transportCost(qty,good,a,b);
+ if(owner.cash<cost)return false;
+ owner.cash-=cost;
+ W.carts.push({id:W.carts.length+1,owner:owner.id,good,qty,from,to,progress:0,days:Math.max(1,Math.ceil(roadDistance(a,b)/7)),cost,orderId});
+ return true;
+}
+function routeOrders(){
+ // Firms compare local price + transport with nearby regions and import only when profitable.
+ for(const b of W.businesses.filter(x=>!x.bankrupt&&x.input)){
+   const rec=V5RECIPES[b.type],home=W.regions[b.region],needed=Math.max(0,rec.inQty*Math.max(1,b.employees.length/3)*b.capacity*2-(b.inventory[b.input]||0));
+   if(needed<=.2)continue;
+   let best=null;
+   for(const r of W.regions){
+     if(r.id===b.region)continue;
+     const src=r.markets[rec.input],del=transportCost(needed,rec.input,r,home);
+     const landed=src.price+del/needed;
+     if(src.stock>needed*1.1 && (!best||landed<best.landed))best={r,src,landed,del};
+   }
+   const local=home.markets[rec.input];
+   const localLand=local.price;
+   if(best && best.landed<localLand*.94){
+     const qty=Math.min(needed,b.cash/Math.max(.01,best.landed*.85));
+     const supplier={cash:0}; // transport paid by business; commodity value settled on arrival.
+     if(qty>0 && createCart(b,rec.input,qty,best.r.id,b.region,b.id)){
+       best.src.stock-=qty; W.tradeLog.unshift(`${b.name} orders ${fmt(qty)} ${rec.input} from ${best.r.name}; landed cost ${money(best.landed)}.`);
+     }
+   } else if(local.stock>0){
+     const qty=Math.min(needed,local.stock,b.cash/Math.max(.01,local.price));
+     if(qty>0){local.stock-=qty;b.cash-=qty*local.price;b.inventory[b.input]=(b.inventory[b.input]||0)+qty;local.sales+=qty;local.demand+=needed}
+   }
+ }
+}
+function advanceCarts(){
+ for(let i=W.carts.length-1;i>=0;i--){
+   const c=W.carts[i];c.progress++;
+   if(c.progress>=c.days){
+     const dest=W.regions[c.to],price=dest.markets[c.good].price;
+     const b=W.businesses.find(x=>x.id===c.owner);
+     if(b&&!b.bankrupt){
+       const purchase=price*c.qty*.88;
+       if(b.cash>=purchase)b.cash-=purchase; else {b.debt+=purchase;b.cash=0}
+       b.inventory[c.good]=(b.inventory[c.good]||0)+c.qty;
+       dest.markets[c.good].sales+=c.qty;dest.markets[c.good].demand+=c.qty;
+       W.tradeLog.unshift(`${b.name} receives ${fmt(c.qty)} ${c.good} after ${c.days} days of transport.`);
+     }
+     W.carts.splice(i,1);
+   }
+ }
+}
+function householdSpatialConsumption(){
+ for(const h of W.households){
+   const members=h.members.map(id=>W.people.find(p=>p.id===id)).filter(p=>p&&p.alive);
+   if(!members.length)continue;
+   const rg=W.regions[h.region], foods=["bread","fish","grain"].sort((a,b)=>rg.markets[a].price/(GOODS_V5[a].cal||1)-rg.markets[b].price/(GOODS_V5[b].cal||1));
+   const desired=members.reduce((s,p)=>s+foodNeed(p)*(1+2.7*p.hunger),0);
+   let budget=Math.max(0,h.cash*.34+Math.max(0,h.cash-h.savingsTarget)*.2),got=0;
+   for(const g of foods){
+     const m=rg.markets[g],want=Math.max(0,desired-got)/(GOODS_V5[g].cal||1);
+     const qty=Math.min(want,m.stock,budget/Math.max(.01,m.price));
+     m.demand+=want;
+     if(qty>0){m.stock-=qty;m.sales+=qty;h.cash-=qty*m.price;budget-=qty*m.price;got+=qty*(GOODS_V5[g].cal||1)}
+     m.unmet+=Math.max(0,want-qty);
+   }
+   const ration=clamp(got/Math.max(.01,desired),0,1);
+   members.forEach(p=>{p.hunger=clamp(p.hunger+(1-ration)*.7-ration*.1,0,2);p.energy=clamp(p.energy+.025,0,1)});
+   h.foodBuffer=clamp(h.foodBuffer+(ration-.7)*.05,.1,4);
+ }
+}
+function spoilage(){
+ for(const rg of W.regions)for(const g in GOODS_V5){
+   const rate=GOODS_V5[g].spoil||0, m=rg.markets[g];m.stock*=Math.max(0,1-rate);
+ }
+ for(const b of W.businesses)for(const g in b.inventory){const rate=GOODS_V5[g]?.spoil||0;b.inventory[g]*=Math.max(0,1-rate)}
+}
+function wagesRentCredit(){
+ const wageByJob={farmer:1.1,miller:1.25,baker:1.35,merchant:1.15,weaver:1.1,smith:1.45,carpenter:1.15,fisher:1.15,laborer:1,guard:1.05,priest:1.0,scribe:1.3};
+ for(const p of W.people.filter(p=>p.alive)){
+   const b=p.employer!=null?W.businesses.find(x=>x.id===p.employer):null;
+   const rg=W.regions[p.region];
+   if(b&&!b.bankrupt){
+     const base=(wageByJob[p.job]||1)*(0.75+rg.markets[b.output]?.price/(GOODS_V5[b.output]?.base||1)*.08);
+     p.wage=base;p.wealth+=base;p.cashflow=base;
+     b.cash-=base;
+   } else {p.wage=0;p.cashflow=0}
+   p.region=b?b.region:W.households[p.household]?.region||0;
+ }
+ // Rent is a real recurring household liability.
+ for(const h of W.households){
+   const due=h.rent||.2;
+   if(h.cash>=due)h.cash-=due;
+   else {h.debt+=due-h.cash;h.cash=0}
+   if(h.debt>h.creditLimit*1.8)h.confidence=clamp(h.confidence-.04,.05,1);
+ }
+ // Small, interest-bearing emergency loans prevent immediate cash insolvency but create debt.
+ for(const h of W.households){
+   if(h.cash<1 && h.debt<h.creditLimit){
+     const loan=Math.min(h.creditLimit-h.debt,3);
+     h.debt+=loan;h.cash+=loan;W.loans.push({borrower:h.id,principal:loan,rate:.0015,age:0});
+   }
+ }
+ for(const b of W.businesses.filter(x=>!x.bankrupt)){
+   if(b.cash<0){b.debt+=-b.cash;b.cash=0}
+   b.debt*=1.0015;
+   if(b.debt>120 && b.cash<2){
+     b.bankrupt=true;W.bankruptcies.push({day:W.day,name:b.name,type:b.type});log(`${b.name} fails: debt overwhelms cash flow.`);
+     b.employees.forEach(id=>{const p=W.people.find(x=>x.id===id);if(p)p.employer=null});b.employees=[];
+   }
+ }
+}
+function adaptiveHiring(){
+ for(const b of W.businesses.filter(x=>!x.bankrupt)){
+   if(!b.output||b.type==="farm"||b.type==="fishery"||b.type==="merchant")continue;
+   const rec=V5RECIPES[b.type],rg=W.regions[b.region],margin=rg.markets[b.output].price*(rec?.outQty||1)-rg.markets[rec?.input||b.output].price*(rec?.inQty||1);
+   const wage=1+(rg.markets[b.output].price||1)*.05;
+   if(margin>wage*1.4 && b.employees.length<7){
+     const candidates=W.people.filter(p=>p.alive&&!p.employer&&W.households[p.household]?.region===b.region).sort((a,c)=>c.skill-a.skill);
+     if(candidates[0]){const p=candidates[0];p.employer=b.id;b.employees.push(p.id);log(`${b.name} hires ${p.name}; local expected contribution margin supports expansion.`)}
+   } else if(margin<wage*.25 && b.employees.length>1){
+     const pid=b.employees.pop(),p=W.people.find(x=>x.id===pid);if(p)p.employer=null;log(`${b.name} sheds labor as margins compress.`)
+   }
+ }
+}
+function v5MortalityBirths(){
+ let deaths=0;
+ for(const p of W.people)if(p.alive){
+   if(p.hunger>.55)p.health-=.003*p.hunger;
+   if(p.hunger>.9)p.health-=.009*p.hunger;
+   if(p.hunger>.72)p.daysStarved++;else p.daysStarved=Math.max(0,p.daysStarved-1);
+   if(p.daysStarved>10)p.health-=.014;
+   if(p.age>58)p.health-=.0005;
+   if(p.health<=0){p.alive=false;deaths++}
+ }
+ if(deaths)log(`${deaths} deaths recorded; prolonged food deprivation is physically consequential.`);
+ for(const h of W.households)h.members=h.members.filter(id=>{const p=W.people.find(x=>x.id===id);return p&&p.alive});
+ if(W.day===1){
+   const eligible=W.households.filter(h=>h.members.length>=2&&h.cash>5&&Math.random()<.014);
+   for(const h of eligible.slice(0,Math.max(0,Math.floor(W.people.length*.004)))){
+     const p=makePerson(W.people.length,h.id);p.age=0;p.job="laborer";p.wealth=0;p.hunger=.1;p.health=.92;p.employer=null;p.region=h.region;
+     W.people.push(p);h.members.push(p.id);log(`Birth: a new child joins ${h.name}.`);
+   }
+ }
+}
+function v5Tick(){
+ W.day++;if(W.day>365){W.day=1;W.year++}
+ weatherTick();localMarketStep();v5Production();routeOrders();advanceCarts();householdSpatialConsumption();
+ adaptiveHiring();wagesRentCredit();spoilage();localPriceUpdate();v5MortalityBirths();crime();
+ for(const p of W.people.filter(x=>x.alive)){
+   if(Math.random()<.04){const g=pick(["grain","flour","bread","fish"]);const rg=W.regions[p.region];p.knowledge[g]={price:rg.markets[g].price,region:p.region,age:0};p.memory.push({type:"market price",good:g,value:rg.markets[g].price,day:W.day});if(p.memory.length>24)p.memory.shift()}
+   for(const k in p.knowledge){p.knowledge[k].age++;if(p.knowledge[k].age>50)delete p.knowledge[k]}
+ }
+ if(W.day%7===0){
+   W.populationHistory.push(W.people.filter(p=>p.alive).length);
+   for(const g in GOODS_V5)W.priceHistory[g].push(W.regions.reduce((s,r)=>s+r.markets[g].price,0)/W.regions.length);
+ }
+}
+const oldInit=init;
+init=function(){oldInit();initV5();};
+const oldAdvance=advance;
+advance=function(n){for(let i=0;i<n;i++)v5Tick();renderAll();};
 
-  // Starving people become more desperate.
-  for(const p of W.people){
-    if(!p.alive)continue;
-    if(p.hunger>.8 && Math.random()<p.risk*.035)crime(p);
-    if(Math.random()<.0015){
-      p.memory.push({type:"grain price",value:W.markets.grain.price,day:W.day});
-      if(p.memory.length>18)p.memory.shift();
-    }
+/* =========================
+   3D WORLD
+   ========================= */
+let scene,camera,renderer,controls,worldGroup,labels=[];
+function mat(c){return new THREE.MeshStandardMaterial({color:c,roughness:.9,metalness:.02})}
+function box(x,y,z,c){return new THREE.Mesh(new THREE.BoxGeometry(x,y,z),mat(c))}
+function cyl(r1,r2,h,c,seg=8){return new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,seg),mat(c))}
+function makeBuilding(b){
+ const g=new THREE.Group();g.userData={kind:"business",id:b.id};
+ const colors={farm:0x7d6040,mill:0x8e7952,bakery:0x7b4637,fishery:0x476a70,loom:0x6a5365,forge:0x484b4d,carpenter:0x66583d,merchant:0x716343};
+ const body=box(4,2.6,3.5,colors[b.type]||0x777);
+ body.position.y=1.3;g.add(body);
+ const roof=new THREE.Mesh(new THREE.ConeGeometry(2.8,1.8,4),mat(0x443c31));roof.rotation.y=Math.PI/4;roof.position.y=3.4;g.add(roof);
+ if(b.type==="mill"){const bladeMat=mat(0xc1a878);for(let i=0;i<4;i++){const bl=box(.22,2.2,.16,0xc1a878);bl.position.set(0,3.2,0);bl.rotation.z=i*Math.PI/2;g.add(bl)}}
+ if(b.type==="bakery"){const chimney=cyl(.28,.34,1.6,0x4a3b34);chimney.position.set(1.2,3.5,.7);g.add(chimney)}
+ if(b.type==="forge"){const chimney=cyl(.45,.55,1.5,0x333536);chimney.position.set(.8,3.4,.7);g.add(chimney)}
+ if(b.type==="farm"){for(let i=0;i<4;i++){const f=box(3.5,.05,.55,0x5d5539);f.position.set(5+i*1.3,.03,-3);g.add(f)}}
+ g.position.set(b.location.x,0,b.location.z);g.userData.click=b;worldGroup.add(g);
+}
+function makeHouse(x,z,i){
+ const g=new THREE.Group();g.userData={kind:"household",id:i};
+ const body=box(2.8,2.2,2.7,0x756550);body.position.y=1.1;g.add(body);
+ const roof=new THREE.Mesh(new THREE.ConeGeometry(2.25,1.4,4),mat(0x403b33));roof.rotation.y=Math.PI/4;roof.position.y=2.9;g.add(roof);
+ g.position.set(x,0,z);worldGroup.add(g);
+}
+function makeTree(x,z){
+ const g=new THREE.Group();const trunk=cyl(.18,.22,1.5,0x594632,7);trunk.position.y=.75;g.add(trunk);const crown=cyl(.9,.35,1.8,0x45583c,7);crown.position.y=2;g.add(crown);g.position.set(x,0,z);worldGroup.add(g)
+}
+function makeField(x,z){
+ for(let i=0;i<7;i++){const row=box(7,.04,.25,0x66563a);row.position.set(x,z*0+0.02,z+i*.65);worldGroup.add(row)}
+}
+function buildWorld(){
+ scene=new THREE.Scene();scene.background=new THREE.Color(0x0b100d);scene.fog=new THREE.Fog(0x0b100d,55,110);
+ camera=new THREE.PerspectiveCamera(48,1,.1,180);camera.position.set(42,46,42);
+ renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:"high-performance"});renderer.setPixelRatio(Math.min(devicePixelRatio,1.8));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;document.getElementById("scene").appendChild(renderer.domElement);
+ controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.08;controls.maxPolarAngle=Math.PI*.48;controls.minDistance=8;controls.maxDistance=85;controls.target.set(0,0,0);
+ const amb=new THREE.HemisphereLight(0xc6d0bd,0x30332c,2.2);scene.add(amb);const sun=new THREE.DirectionalLight(0xffdfad,2.5);sun.position.set(-25,55,15);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);scene.add(sun);
+ const ground=box(120,.3,120,0x34382f);ground.position.y=-.18;scene.add(ground);
+ worldGroup=new THREE.Group();scene.add(worldGroup);
+ // River
+ const river=box(12,.05,120,0x334d51);river.position.set(35,.02,0);scene.add(river);
+ // roads
+ for(let i=-2;i<=2;i++){const road=box(2,.04,105,0x4a463d);road.position.set(i*10,.03,0);scene.add(road)}
+ for(let i=-3;i<=3;i++){const road=box(105,.04,2,0x4a463d);road.position.set(0,.035,i*10);scene.add(road)}
+ W.businesses.forEach(makeBuilding);
+ W.households.forEach((h,i)=>makeHouse(-24+(i%10)*5,-30+Math.floor(i/10)*3.6,i));
+ for(let i=0;i<65;i++)makeTree(r(-50,48),r(-48,48));
+ // town square
+ const sq=box(16,.08,14,0x5a5549);sq.position.set(0,.05,0);scene.add(sq);
+ const well=cyl(1.4,1.4,.8,0x77766d,12);well.position.set(0,.45,0);scene.add(well);
+ renderer.domElement.addEventListener("pointerdown",pickWorld);
+ addEventListener("resize",()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)})
+ animate();
+}
+function pickWorld(e){
+ const rect=renderer.domElement.getBoundingClientRect(),mouse=new THREE.Vector2((e.clientX-rect.left)/rect.width*2-1,-((e.clientY-rect.top)/rect.height*2-1)),ray=new THREE.Raycaster();ray.setFromCamera(mouse,camera);
+ const hits=ray.intersectObjects(worldGroup.children,true);if(!hits.length)return;
+ let o=hits[0].object;while(o.parent&&o.parent!==worldGroup)o=o.parent;
+ if(o.userData.kind==="business"){selected={type:"business",id:o.userData.id};renderInspector()}
+ else if(o.userData.kind==="household"){selected={type:"household",id:o.userData.id};renderInspector()}
+}
+function setCamera(which){camMode=which;const pos={overview:[42,46,42],close:[18,18,18],north:[0,45,55],south:[0,45,-55]}[which]||[42,46,42];camera.position.set(...pos);controls.target.set(0,0,0)}
+let cartMeshes=[];
+function syncCarts(){
+  for(const m of cartMeshes)worldGroup.remove(m);cartMeshes=[];
+  for(const c of W.carts){
+    const a=REGIONS[c.from],b=REGIONS[c.to],t=clamp(c.progress/Math.max(1,c.days),0,1);
+    const g=new THREE.Group();g.userData={kind:"cart",id:c.id};
+    const body=box(1.2,.5,.8,0x6f6044);body.position.y=.5;g.add(body);
+    const wheel1=cyl(.25,.25,.15,0x302d28,12);wheel1.rotation.z=Math.PI/2;wheel1.position.set(-.55,.28,.48);g.add(wheel1);
+    const wheel2=wheel1.clone();wheel2.position.z=-.48;g.add(wheel2);
+    g.position.set(a.cx+(b.cx-a.cx)*t,.02,a.cz+(b.cz-a.cz)*t);worldGroup.add(g);cartMeshes.push(g);
   }
+}
+const oldAnimate=animate;
+animate=function(){requestAnimationFrame(animate);syncCarts();controls.update();renderer.render(scene,camera)}
 
-  healthStep();
-
-  // Information propagates through a limited attention channel.
-  if(Math.random()<.20){
-    const price=W.markets.grain.price;
-    for(let i=0;i<Math.floor(r(2,12));i++){
-      const p=pick(W.people.filter(x=>x.alive));
-      p.knowledge.grain={value:price,age:0};
-    }
-  }
-  for(const p of W.people){
-    for(const k in p.knowledge)p.knowledge[k].age++;
-    if(Object.keys(p.knowledge).length>6){
-      const oldest=Object.entries(p.knowledge).sort((a,b)=>b[1].age-a[1].age)[0][0];
-      delete p.knowledge[oldest];
-    }
-  }
-
-  for(const o of W.orgs){
-    o.members=Math.max(3,Math.round(o.members*(1+r(-.004,.008))));
-    o.power=clamp(o.power+r(-.003,.004),.05,1);
-  }
-  if(Math.random()<.015)politicsEvent();
-  if(Math.random()<.012)emerge();
-
-  if(flow.foodBought<flow.foodWanted*.6 && W.day%2===0)
-    log("Food rationing: only "+(flow.foodBought/Math.max(.1,flow.foodWanted)*100).toFixed(0)+"% of desired food was purchased.");
+/* =========================
+   UI
+   ========================= */
+function setMode(m,el){mode=m;document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));el.classList.add("active");renderAll()}
+function setSelected(type,id){selected={type,id};renderInspector()}
+function businessDetail(b){
+ const rec=b.input?RECIPES[{mill:"mill",bakery:"bakery",loom:"loom",forge:"forge",carpenter:"carpenter"}[b.type]]:null;
+ const owner=W.people.find(p=>p.id===b.owner);
+ return `<div class="title">${b.name}</div><div class="sub">${b.type} • site ${b.id}</div>
+ <div class="grid"><div class="stat"><b>${money(b.cash)}</b><span>cash</span></div><div class="stat"><b>${money(b.lastProfit)}</b><span>last profit</span></div><div class="stat"><b>${b.employees.length}</b><span>employees</span></div><div class="stat"><b>${Math.round(b.confidence*100)}%</b><span>confidence</span></div></div>
+ <div class="section">Production plan</div><div class="row"><span>Output</span><b>${b.output||"trade"}</b></div><div class="row"><span>Input</span><b>${b.input||"none"}</b></div>${rec?`<div class="row"><span>Recipe</span><b>${rec.inQty} ${b.input} → ${rec.outQty} ${b.output}</b></div>`:""}
+ <div class="row"><span>Expected revenue</span><b>${money(expectedRevenue(b))}</b></div><div class="row"><span>Expected input cost</span><b>${money(expectedInputCost(b))}</b></div><div class="row"><span>Region</span><b>${W.regions[b.region]?.name||"—"}</b></div><div class="row"><span>Debt</span><b class="${b.debt>20?"bad":""}">${money(b.debt)}</b></div><div class="row"><span>Land</span><b>${fmt(b.land||0)}</b></div><div class="row"><span>Inventory</span><b>${Object.entries(b.inventory||{}).map(([g,q])=>g+" "+fmt(q)).join(", ")||"none"}</b></div>
+ <div class="section">Owner & labor</div>${owner?`<div class="item click" onclick="setSelected('person',${owner.id})"><b>${owner.name}</b><div class="muted">${owner.job} • ${money(owner.wealth)}</div></div>`:""}${b.employees.map(id=>{const p=W.people.find(x=>x.id===id);return p?`<div class="row"><span>${p.name}</span><span>${money(p.wealth)}</span></div>`:""}).join("")}`;
 }
-function annual(){
-  const births=Math.round(W.people.filter(p=>p.alive).length*.012);
-  let deaths=0;
-  W.people=W.people.filter(p=>{if(!p.alive){deaths++;return false}return true});
-  for(let i=0;i<births;i++)W.people.push(npc(W.people.length+Math.floor(Math.random()*99999)));
-  W.treasury+=W.people.length*r(.3,.8)*W.tax;
-  log("Annual accounting: "+births+" births, "+deaths+" deaths. Treasury: "+W.treasury.toFixed(0)+" silver.");
+function householdDetail(h){
+ const ps=h.members.map(id=>W.people.find(p=>p.id===id)).filter(Boolean);
+ return `<div class="title">${h.name}</div><div class="sub">${ps.length} current members</div><div class="grid"><div class="stat"><b>${money(h.cash)}</b><span>cash</span></div><div class="stat"><b>${money(h.savingsTarget)}</b><span>savings target</span></div><div class="stat"><b>${fmt(ps.reduce((s,p)=>s+p.health,0)/Math.max(1,ps.length))}</b><span>avg health</span></div><div class="stat"><b>${fmt(ps.reduce((s,p)=>s+p.hunger,0)/Math.max(1,ps.length))}</b><span>avg hunger</span></div></div><div class="section">Members</div>${ps.map(p=>`<div class="item click" onclick="setSelected('person',${p.id})"><b>${p.name}</b><div class="muted">${p.age} • ${p.job} • ${money(p.wealth)} • hunger ${fmt(p.hunger)}</div></div>`).join("")}`;
 }
-function politicsEvent(){
-  const x=pick(["tax","watch","guild"]);
-  if(x==="tax"){W.tax=clamp(W.tax+r(-.01,.015),.04,.18);log("The council adjusted market taxes to "+(W.tax*100).toFixed(1)+"%.");}
-  if(x==="watch"){let o=W.orgs.find(x=>x.name==="Town Watch");o.members+=Math.round(r(-2,5));log("The council reallocates resources to the town watch.");}
-  if(x==="guild"){let gs=W.orgs.filter(x=>x.type==="guild");let o=pick(gs);o.power=clamp(o.power+.03,.05,1);log(o.name+" gains influence over the town council.");}
-}
-function emerge(){
-  const poor=W.people.filter(p=>p.alive&&p.wealth<4).length;
-  if(poor>100&&!W.orgs.some(o=>o.name==="Laborers' Brotherhood")){
-    W.orgs.push({name:"Laborers' Brotherhood",type:"association",members:18,power:.12});
-    log("Persistent economic stress produces an emergent labor association.");
-  }
-}
-function step(n){for(let i=0;i<n;i++){tick();captureHistory()}render()}
-function run(){
-  W.running=!W.running;
-  document.getElementById("run").textContent=W.running?"⏸ Pause":"▶ Run";
-  if(W.running&&!timer)timer=setInterval(()=>{if(W.running){for(let i=0;i<3;i++){tick();captureHistory()}render()}},350);
-}
-function reset(){if(timer){clearInterval(timer);timer=null}UI={history:{days:[],grain:[],bread:[],population:[],wealth:[],hunger:[],crime:[]}};init();captureHistory();}
-
-function stats(){
-  const alive=W.people.length;
-  const avg=W.people.reduce((a,p)=>a+p.wealth,0)/Math.max(1,alive);
-  const grain=W.markets.grain;
-  const foodStock=W.markets.grain.stock+W.markets.bread.stock+W.markets.fish.stock;
-  const hungry=W.people.filter(p=>p.hunger>.65).length;
-  return `
-  <div class="card"><div class="label">DATE</div><div class="value">${W.year}</div><div class="muted">Day ${W.day}/365</div></div>
-  <div class="card"><div class="label">POPULATION</div><div class="value">${alive.toLocaleString()}</div><div class="muted">${hungry.toLocaleString()} severely hungry</div></div>
-  <div class="card"><div class="label">AVG WEALTH</div><div class="value">${avg.toFixed(1)}s</div><div class="muted">per resident</div></div>
-  <div class="card"><div class="label">GRAIN PRICE</div><div class="value">${grain.price.toFixed(2)}s</div><div class="muted">${grain.stock.toFixed(0)} in market</div></div>
-  <div class="card"><div class="label">FOOD STOCK</div><div class="value">${foodStock.toFixed(0)}</div><div class="muted">grain + bread + fish</div></div>
-  <div class="card"><div class="label">UNMET FOOD</div><div class="value">${W.totalFoodUnmet.toFixed(0)}</div><div class="muted">cumulative units</div></div>
-  <div class="card"><div class="label">STARVATION</div><div class="value">${W.shortageDays}d</div><div class="muted">aggregate shortage streak</div></div>
-  <div class="card"><div class="label">TREASURY</div><div class="value">${W.treasury.toFixed(0)}s</div><div class="muted">tax ${(W.tax*100).toFixed(1)}%</div></div>`;
-}
-function overview(){
-  const hungry=W.people.filter(p=>p.hunger>.65).length;
-  const deadNote=W.events.find(x=>x.includes("residents died"));
-  return `<div class="panel"><b>World state</b>
-    <div class="row"><span>Organizations</span><span>${W.orgs.length}</span></div>
-    <div class="row"><span>Recorded crimes</span><span>${W.crimes.length}</span></div>
-    <div class="row"><span>Severely hungry residents</span><span>${hungry}</span></div>
-    <div class="row"><span>Grain price</span><span>${W.markets.grain.price.toFixed(2)}s</span></div>
-    <div class="row"><span>Grain stock</span><span>${W.markets.grain.stock.toFixed(1)}</span></div>
-    <div class="row"><span>Latest mortality event</span><span>${deadNote?deadNote.replace(/.*\\] /,""):"None yet"}</span></div>
-  </div>
-  <div class="panel"><b>Event stream</b><div class="log">${W.events.slice(0,50).map(x=>"<div>"+x+"</div>").join("")}</div></div>`;
-}
-function economy(){
-  let rows=Object.entries(W.markets).map(([g,m])=>`
-    <tr><td>${g}</td><td>${m.price.toFixed(2)}s</td><td>${m.stock.toFixed(1)}</td>
-    <td>${m.production.toFixed(1)}</td><td>${m.demand.toFixed(1)}</td>
-    <td>${m.sales.toFixed(1)}</td><td>${m.unmet.toFixed(1)}</td><td>${m.daysOfSupply.toFixed(1)}</td></tr>`).join("");
-  let jr=JOBS.map(j=>`<div class="row"><span>${j}</span><span>${W.people.filter(p=>p.job===j).length}</span></div>`).join("");
-  return `<div class="panel"><b>Market clearing</b><p class="muted">Stock can only fall through actual purchases or production inputs. Unmet demand is explicit; prices respond to scarcity and rationing.</p>
-  <div class="scroll"><table><tr><th>Commodity</th><th>Price</th><th>Stock</th><th>Production</th><th>Demand</th><th>Sales</th><th>Unmet</th><th>Days Supply</th></tr>${rows}</table></div></div>
-  <div class="panel"><b>Labor</b>${jr}</div>`;
-}
-function people(){
-  let q=(document.getElementById("search")||{}).value||"";
-  let rows=W.people.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())).slice(0,100).map(p=>`
-  <tr><td>${p.name}</td><td>${p.age}</td><td>${p.job}</td><td>${p.wealth.toFixed(1)}</td>
-  <td>${p.hunger.toFixed(2)}</td><td>${p.health.toFixed(2)}</td><td>${p.daysStarved}</td><td>${p.goal}</td></tr>`).join("");
-  return `<div class="panel"><input id="search" placeholder="Search residents..." value="${q}" oninput="render()"></div>
-  <div class="panel scroll"><table><tr><th>Name</th><th>Age</th><th>Job</th><th>Wealth</th><th>Hunger</th><th>Health</th><th>Starved Days</th><th>Goal</th></tr>${rows}</table></div>`;
-}
-function crimeTab(){
-  return `<div class="panel"><b>Crime & enforcement</b>
-  <div class="row"><span>Incidents</span><span>${W.crimes.length}</span></div>
-  <div class="row"><span>Criminal organizations</span><span>${W.orgs.filter(o=>o.type==="criminal").length}</span></div>
-  <div class="scroll"><table><tr><th>Year</th><th>Type</th><th>Actor</th><th>Value</th><th>Detected</th></tr>
-  ${W.crimes.slice(0,50).map(c=>`<tr><td>${c.year}</td><td>${c.type}</td><td>${c.actor}</td><td>${c.value}s</td><td>${c.detected}</td></tr>`).join("")}</table></div></div>`;
-}
-function politics(){
-  return `<div class="panel"><b>Institutions & organizations</b>${W.orgs.map(o=>`
-  <div class="row"><span><b>${o.name}</b><br><span class="muted">${o.type}</span></span>
-  <span>${o.members} members<br><span class="muted">power ${(o.power*100).toFixed(0)}%</span></span></div>`).join("")}</div>`;
-}
-function info(){
-  let k=W.people.reduce((a,p)=>a+Object.keys(p.knowledge).length,0);
-  return `<div class="panel"><b>Information ecology</b>
-  <div class="row"><span>Knowledge records held</span><span>${k}</span></div>
-  <div class="row"><span>Residents holding information</span><span>${W.people.filter(p=>Object.keys(p.knowledge).length).length}</span></div>
-  <p class="muted">NPCs receive partial market information. Knowledge is capacity-limited and decays. The market itself has a complete accounting state; NPCs do not.</p></div>`;
-}
-function tab(t,e){active=t;document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));e.classList.add("active");render()}
-function render(){
-  document.getElementById("stats").innerHTML=stats();
-  document.getElementById("date").textContent="Regional sandbox V2 • "+W.people.length.toLocaleString()+" residents • accounting-based markets";
-  document.getElementById("content").innerHTML=active==="overview"?overview():active==="economy"?economy():active==="people"?people():active==="crime"?crimeTab():active==="politics"?politics():info();
-}
-init();
-
-
-/* V3 OBSERVER / UI DATA LAYER */
-function householdKey(p){return "H"+Math.floor(p.id/4)}
-function uiHouseholds(){
-  const map={};
-  for(const p of W.people){
-    const k=householdKey(p);
-    if(!map[k])map[k]={id:k,members:[],wealth:0,food:0,avgHealth:0,avgHunger:0,risk:0,workers:0,children:0,goals:{}};
-    const h=map[k]; h.members.push(p); h.wealth+=p.wealth; h.food+=p.food;
-    h.avgHealth+=p.health; h.avgHunger+=p.hunger; h.risk+=p.risk;
-    if(p.age<18)h.children++; else if(p.employed)h.workers++;
-    h.goals[p.goal]=(h.goals[p.goal]||0)+1;
-  }
-  return Object.values(map).map(h=>{
-    const n=h.members.length;
-    h.avgHealth/=n;h.avgHunger/=n;h.risk/=n;
-    h.primaryGoal=Object.entries(h.goals).sort((a,b)=>b[1]-a[1])[0]?.[0]||"none";
-    h.security=clamp((h.wealth/30)*(1-h.avgHunger/2)*(h.avgHealth/100),0,5);
-    return h;
-  });
-}
-function uiPerson(id){return W.people.find(p=>String(p.id)===String(id))}
-function uiTownStats(index){
-  const people=W.people.filter(p=>((p.id+index*17)%3)===index);
-  const wealth=people.reduce((s,p)=>s+p.wealth,0);
-  return {people,wealth,avgWealth:wealth/Math.max(1,people.length),avgHealth:people.reduce((s,p)=>s+p.health,0)/Math.max(1,people.length),avgHunger:people.reduce((s,p)=>s+p.hunger,0)/Math.max(1,people.length)};
-}
-let UI={history:{days:[],grain:[],bread:[],population:[],wealth:[],hunger:[],crime:[]}};
-function captureHistory(){
-  if(!W)return;
-  UI.history.days.push(W.year+"-"+W.day);
-  UI.history.grain.push(W.markets.grain.price);
-  UI.history.bread.push(W.markets.bread.price);
-  UI.history.population.push(W.people.length);
-  UI.history.wealth.push(W.people.reduce((a,p)=>a+p.wealth,0)/Math.max(1,W.people.length));
-  UI.history.hunger.push(W.people.filter(p=>p.hunger>.65).length);
-  UI.history.crime.push(W.crimes.length);
-  for(const k in UI.history)if(UI.history[k].length>240)UI.history[k].shift();
-}
-</script>
-<script>
-let UI2={tab:"realm",search:"",inspector:null,chart:"food"};
-function pct2(x){return ((x||0)*100).toFixed(0)+"%"}function num2(x){return Number(x||0).toLocaleString(undefined,{maximumFractionDigits:1})}function money2(x){return num2(x)+"s"}
-function townLabel(i){return ["Westmark","Riverlands","Iron March"][i]}
-function uiTab(t,e){UI2.tab=t;document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));if(e)e.classList.add("active");UI2.inspector=null;renderUI()}
-function uiMain(){return UI2.tab==="realm"?realmView():UI2.tab==="economy"?economyView():UI2.tab==="households"?householdsView():UI2.tab==="people"?peopleView():UI2.tab==="organizations"?orgView():UI2.tab==="crime"?crimeView():analyticsView()}
-function realmView(){
- const a=W.people,hungry=a.filter(p=>p.hunger>.65).length,poor=a.filter(p=>p.wealth<4).length,tstats=[0,1,2].map(uiTownStats);
- return `<div class="pagehead"><div><h2>The Realm</h2><div class="crumb">Strategic observation view • ${W.year}, day ${W.day} • ${W.running?"simulation running":"paused"}</div></div><button onclick="reset()">New World</button></div>
- <div class="cards"><div class="card"><div class="label">Population</div><div class="big">${num2(a.length)}</div><div class="delta">${num2(a.filter(p=>p.age<18).length)} children</div></div>
- <div class="card"><div class="label">Food security</div><div class="big ${hungry>a.length*.15?"warn":"good"}">${pct2(1-hungry/Math.max(1,a.length))}</div><div class="delta">${num2(hungry)} severely hungry</div></div>
- <div class="card"><div class="label">Grain price</div><div class="big">${W.markets.grain.price.toFixed(2)}s</div><div class="delta">${num2(W.markets.grain.stock)} units</div></div>
- <div class="card"><div class="label">Household strain</div><div class="big">${num2(poor)}</div><div class="delta">residents below 4s</div></div></div>
- <div class="map"><div class="road" style="left:25%;top:55%;width:54%;transform:rotate(-8deg)"></div><div class="road" style="left:30%;top:58%;width:40%;transform:rotate(28deg)"></div>
- ${[0,1,2].map((i)=>{let x=[24,72,50][i],y=[38,40,76][i],q=tstats[i];return `<div class="settlement" style="left:${x}%;top:${y}%" onclick="showTown(${i})"><div class="town">♜</div><b>${townLabel(i)}</b><small>${num2(q.people.length)} souls • avg ${money2(q.avgWealth)}</small></div>`}).join("")}
- <div class="maplegend">Strategic map • settlements are an observation overlay; V2 currently uses one regional market.</div></div>
- <div class="split"><div class="panel"><h3>Markets at a glance</h3>${Object.entries(W.markets).slice(0,8).map(([g,m])=>`<div class="row"><span>${g}</span><span class="${m.unmet>0?"warn":"good"}">${m.price.toFixed(2)}s · ${num2(m.stock)}</span></div>`).join("")}</div>
- <div class="panel"><h3>Recent dispatches</h3><div class="eventfeed">${W.events.slice(0,14).map(x=>`<div class="event">${x}</div>`).join("")}</div></div></div>`;
-}
-function showTown(i){UI2.inspector={type:"town",i};renderInspector()}
-function economyView(){
- const rows=Object.entries(W.markets).map(([g,m])=>`<tr><td>${g}</td><td>${m.price.toFixed(2)}s</td><td>${num2(m.stock)}</td><td>${num2(m.production)}</td><td>${num2(m.demand)}</td><td>${num2(m.sales)}</td><td class="${m.unmet>0?"warn":""}">${num2(m.unmet)}</td><td>${num2(m.daysOfSupply)}</td></tr>`).join("");
- return `<div class="pagehead"><div><h2>Markets & Production</h2><div class="crumb">Physical stocks, purchasing power, production and price formation</div></div></div>
- <div class="cards"><div class="card"><div class="label">Grain stock</div><div class="big">${num2(W.markets.grain.stock)}</div><div class="delta">demand ${num2(W.markets.grain.demand)}</div></div><div class="card"><div class="label">Grain price</div><div class="big">${W.markets.grain.price.toFixed(2)}s</div><div class="delta">base 1.00s</div></div><div class="card"><div class="label">Unmet food</div><div class="big warn">${num2(W.totalFoodUnmet)}</div><div class="delta">cumulative</div></div><div class="card"><div class="label">Treasury</div><div class="big">${money2(W.treasury)}</div><div class="delta">tax ${(W.tax*100).toFixed(1)}%</div></div></div>
- <div class="panel"><h3>Market clearing ledger</h3><div class="scroll"><table class="table"><tr><th>Good</th><th>Price</th><th>Stock</th><th>Production</th><th>Demand</th><th>Sales</th><th>Unmet</th><th>Supply days</th></tr>${rows}</table></div></div>
- <div class="split"><div class="panel"><h3>Labor distribution</h3>${JOBS.map(j=>`<div class="row"><span>${j}</span><span>${W.people.filter(p=>p.job===j).length}</span></div>`).join("")}</div><div class="panel"><h3>Economic chain</h3><p class="muted">Residents spend from individual wealth. Stock falls through purchases or processor inputs. Unmet demand feeds prices. Production requires labor and physical inputs. Food scarcity becomes hunger and mortality.</p></div></div>`;
-}
-function householdsView(){
- const hs=uiHouseholds().sort((a,b)=>b.wealth-a.wealth),q=UI2.search.toLowerCase(),filtered=hs.filter(h=>h.id.toLowerCase().includes(q)||h.primaryGoal.toLowerCase().includes(q));
- return `<div class="pagehead"><div><h2>Households</h2><div class="crumb">Balance sheet → members → individual simulation state</div></div></div>
- <div class="toolbar"><input placeholder="Search household / goal" value="${UI2.search}" oninput="UI2.search=this.value;renderUI()"><button onclick="UI2.search='';renderUI()">Clear</button></div>
- <div class="panel"><div class="scroll"><table class="table"><tr><th>Household</th><th>Members</th><th>Children</th><th>Wealth</th><th>Food</th><th>Health</th><th>Hunger</th><th>Workers</th><th>Goal</th></tr>${filtered.slice(0,250).map(h=>`<tr class="click" onclick="selectHousehold('${h.id}')"><td class="gold">${h.id}</td><td>${h.members.length}</td><td>${h.children}</td><td>${money2(h.wealth)}</td><td>${num2(h.food)}</td><td>${num2(h.avgHealth)}</td><td class="${h.avgHunger>.65?"warn":""}">${num2(h.avgHunger)}</td><td>${h.workers}</td><td>${h.primaryGoal}</td></tr>`).join("")}</table></div></div>`;
-}
-function selectHousehold(id){UI2.inspector={type:"household",id};renderInspector()}
-function peopleView(){
- const q=UI2.search.toLowerCase(),ps=W.people.filter(p=>p.name.toLowerCase().includes(q)||p.job.toLowerCase().includes(q)||String(p.id).includes(q)).slice(0,300);
- return `<div class="pagehead"><div><h2>People</h2><div class="crumb">Individual-level state • click any resident for full inspection</div></div></div>
- <div class="toolbar"><input placeholder="Name, occupation or ID" value="${UI2.search}" oninput="UI2.search=this.value;renderUI()"><button onclick="UI2.search='';renderUI()">Clear</button></div>
- <div class="panel"><div class="scroll"><table class="table"><tr><th>Name</th><th>Age</th><th>Job</th><th>Wealth</th><th>Health</th><th>Hunger</th><th>Risk</th><th>Goal</th><th>Memory</th><th>Knowledge</th></tr>${ps.map(p=>`<tr class="click" onclick="selectPerson(${p.id})"><td class="gold">${p.name}</td><td>${p.age}</td><td>${p.job}</td><td>${money2(p.wealth)}</td><td>${num2(p.health)}</td><td class="${p.hunger>.65?"warn":""}">${num2(p.hunger)}</td><td>${pct2(p.risk)}</td><td>${p.goal}</td><td>${p.memory.length}</td><td>${Object.keys(p.knowledge).length}</td></tr>`).join("")}</table></div></div>`;
-}
-function selectPerson(id){UI2.inspector={type:"person",id};renderInspector()}
-function orgView(){return `<div class="pagehead"><div><h2>Factions & Institutions</h2><div class="crumb">Organizations accumulate members and influence</div></div></div><div class="split">${W.orgs.map((o,i)=>`<div class="panel" onclick="UI2.inspector={type:'org',i};renderInspector()" style="cursor:pointer"><h3>${o.name}</h3><div class="muted">${o.type}</div><div class="row"><span>Members</span><b>${o.members}</b></div><div class="row"><span>Power</span><b>${pct2(o.power)}</b></div><div class="meter"><i style="width:${o.power*100}%"></i></div></div>`).join("")}</div>`}
-function crimeView(){const caught=W.crimes.filter(c=>c.detected).length;return `<div class="pagehead"><div><h2>Crime & Order</h2><div class="crumb">Offending, incentives, detection and enforcement</div></div></div><div class="cards"><div class="card"><div class="label">Incidents</div><div class="big">${W.crimes.length}</div></div><div class="card"><div class="label">Detected</div><div class="big">${caught}</div><div class="delta">${pct2(caught/Math.max(1,W.crimes.length))} detection</div></div><div class="card"><div class="label">Criminal factions</div><div class="big">${W.orgs.filter(o=>o.type==="criminal").length}</div></div><div class="card"><div class="label">Severely hungry</div><div class="big warn">${W.people.filter(p=>p.hunger>.65).length}</div></div></div><div class="panel"><h3>Recent incidents</h3><div class="scroll"><table class="table"><tr><th>Year</th><th>Type</th><th>Actor</th><th>Value</th><th>Detected</th></tr>${W.crimes.slice(0,120).map(c=>`<tr class="click" onclick="selectPersonByName('${c.actor.replace(/'/g,"\\\\'")}')"><td>${c.year}</td><td>${c.type}</td><td>${c.actor}</td><td>${c.value}s</td><td class="${c.detected?"good":"warn"}">${c.detected?"yes":"no"}</td></tr>`).join("")}</table></div></div>`}
-function selectPersonByName(n){const p=W.people.find(x=>x.name===n);if(p)selectPerson(p.id)}
-function analyticsView(){return `<div class="pagehead"><div><h2>The Chronicle</h2><div class="crumb">Historical visualization of key simulation variables</div></div><div class="toolbar"><button class="${UI2.chart==="food"?"gold":""}" onclick="UI2.chart='food';renderUI()">Food</button><button class="${UI2.chart==="prices"?"gold":""}" onclick="UI2.chart='prices';renderUI()">Prices</button><button class="${UI2.chart==="population"?"gold":""}" onclick="UI2.chart='population';renderUI()">Population</button><button class="${UI2.chart==="wealth"?"gold":""}" onclick="UI2.chart='wealth';renderUI()">Wealth</button></div></div><div class="panel"><canvas id="chart"></canvas></div><div class="triple"><div class="panel"><h3>Current</h3><div class="row"><span>Population</span><b>${num2(W.people.length)}</b></div><div class="row"><span>Avg wealth</span><b>${money2(W.people.reduce((s,p)=>s+p.wealth,0)/Math.max(1,W.people.length))}</b></div></div><div class="panel"><h3>Pressure</h3><div class="row"><span>Hungry</span><b class="warn">${num2(W.people.filter(p=>p.hunger>.65).length)}</b></div><div class="row"><span>Unmet food</span><b>${num2(W.totalFoodUnmet)}</b></div></div><div class="panel"><h3>Order</h3><div class="row"><span>Crime incidents</span><b>${W.crimes.length}</b></div><div class="row"><span>Watch power</span><b>${pct2(W.orgs.find(o=>o.type==="state")?.power||0)}</b></div></div></div>`}
-function renderChart(){
- const c=document.getElementById("chart");if(!c)return;const rect=c.getBoundingClientRect(),dpr=window.devicePixelRatio||1;c.width=rect.width*dpr;c.height=270*dpr;const x=c.getContext("2d");x.scale(dpr,dpr);const w=rect.width,h=270;
- x.clearRect(0,0,w,h);x.strokeStyle="#303338";for(let i=1;i<5;i++){let y=i*h/5;x.beginPath();x.moveTo(0,y);x.lineTo(w,y);x.stroke()}
- let sets=UI2.chart==="population"?[["Population",UI.history.population],["Hungry",UI.history.hunger]]:UI2.chart==="wealth"?[["Avg wealth",UI.history.wealth],["Crime",UI.history.crime]]:[["Grain",UI.history.grain],["Bread",UI.history.bread]];
- const vals=sets.flatMap(a=>a[1]);const min=Math.min(...vals,0),max=Math.max(...vals,1),cols=["#c9a766","#7d94b5"];
- sets.forEach((set,si)=>{x.strokeStyle=cols[si];x.lineWidth=2;x.beginPath();set[1].forEach((v,i)=>{let xx=i/(Math.max(1,set[1].length-1))*w,yy=h-(v-min)/(max-min)*h;i?x.lineTo(xx,yy):x.moveTo(xx,yy)});x.stroke();x.fillStyle=cols[si];x.font="11px sans-serif";x.fillText(set[0],10+si*120,18)});
+function personDetail(p){
+ const b=p.employer!=null?W.businesses.find(x=>x.id===p.employer):null,h=W.households[p.household];
+ return `<div class="title">${p.name}</div><div class="sub">Resident #${p.id} • age ${p.age} • ${p.alive?"alive":"dead"}</div><div class="grid"><div class="stat"><b>${money(p.wealth)}</b><span>wealth</span></div><div class="stat"><b>${fmt(p.health)}</b><span>health</span></div><div class="stat"><b>${fmt(p.hunger)}</b><span>hunger</span></div><div class="stat"><b>${Math.round(p.skill*100)}%</b><span>skill</span></div><div class="stat"><b>${Math.round(p.risk*100)}%</b><span>risk</span></div><div class="stat"><b>${Math.round(p.law*100)}%</b><span>lawfulness</span></div></div>
+ <div class="section">Economic decision state</div><div class="row"><span>Goal</span><b>${p.goal}</b></div><div class="row"><span>Occupation</span><b>${p.job}</b></div><div class="row"><span>Employer</span><b>${b?b.name:"none"}</b></div><div class="row"><span>Days starved</span><b class="${p.daysStarved>4?"bad":""}">${p.daysStarved}</b></div><div class="row"><span>Household</span><button onclick="setSelected('household',${h.id})">${h.name}</button></div><div class="row"><span>Region</span><b>${W.regions[h.region]?.name||"—"}</b></div><div class="row"><span>Debt</span><b>${money(h.debt)}</b></div><div class="row"><span>Rent</span><b>${money(h.rent)}</b></div>
+ <div class="section">Information</div><div class="row"><span>Knowledge records</span><b>${Object.keys(p.knowledge).length}</b></div>${Object.entries(p.knowledge).map(([g,v])=>`<div class="row"><span>${g}</span><span>${money(v.price)} • age ${v.age}d</span></div>`).join("")}
+ <div class="section">Recent memory</div>${p.memory.slice(-8).reverse().map(m=>`<div class="event">${m.type}${m.good?" • "+m.good:""} <span class="muted">${m.day?m.day+"d":""}</span></div>`).join("")}`;
 }
 function renderInspector(){
- const el=document.getElementById("inspector");if(!UI2.inspector){el.innerHTML=`<div class="inspectorEmpty">Select a household, resident, faction or settlement.<br><br>The inspector exposes the simulation state behind aggregate views.</div>`;return}
- const q=UI2.inspector;
- if(q.type==="person"){const p=uiPerson(q.id);if(!p){el.innerHTML="Resident no longer exists.";return}const h=uiHouseholds().find(x=>x.members.some(m=>m.id===p.id));
- el.innerHTML=`<div class="detailTitle">${p.name}</div><div class="detailSub">ID ${p.id} • ${p.job} • age ${p.age} • ${p.alive?"alive":"dead"}</div><div class="statgrid"><div class="mini"><b>${money2(p.wealth)}</b><span>wealth</span></div><div class="mini"><b>${num2(p.health)}</b><span>health</span></div><div class="mini"><b>${num2(p.hunger)}</b><span>hunger</span></div><div class="mini"><b>${pct2(p.risk)}</b><span>risk appetite</span></div><div class="mini"><b>${pct2(p.law)}</b><span>lawfulness</span></div><div class="mini"><b>${num2(p.productivity)}</b><span>productivity</span></div></div>
- <div class="section">Behavioral state</div><div class="row"><span>Goal</span><b>${p.goal}</b></div><div class="row"><span>Employment</span><b>${p.employed?"employed":"unemployed"}</b></div><div class="row"><span>Starved days</span><b class="${p.daysStarved>3?"warn":""}">${p.daysStarved}</b></div><div class="row"><span>Energy</span><b>${num2(p.energy)}</b></div>
- <div class="section">Household</div><div class="row"><span>Household</span><button onclick="selectHousehold('${h.id}')">${h.id}</button></div><div class="row"><span>Household wealth</span><b>${money2(h.wealth)}</b></div>
- <div class="section">Memory & knowledge</div><div class="row"><span>Memories</span><b>${p.memory.length}</b></div>${p.memory.slice(-8).reverse().map(m=>`<div class="event">${m.type||"memory"} <span class="muted">day ${m.day||"?"}</span></div>`).join("")}<div class="row"><span>Knowledge records</span><b>${Object.keys(p.knowledge).length}</b></div>${Object.entries(p.knowledge).map(([k,v])=>`<div class="event">${k} <span class="muted">age ${v.age}</span></div>`).join("")}`;return}
- if(q.type==="household"){const h=uiHouseholds().find(x=>x.id===q.id);if(!h){el.innerHTML="Household no longer exists.";return}el.innerHTML=`<div class="detailTitle">${h.id}</div><div class="detailSub">${h.members.length} members • ${h.children} children • ${h.primaryGoal}</div><div class="statgrid"><div class="mini"><b>${money2(h.wealth)}</b><span>combined wealth</span></div><div class="mini"><b>${num2(h.food)}</b><span>food carried</span></div><div class="mini"><b>${num2(h.avgHealth)}</b><span>avg health</span></div><div class="mini"><b>${num2(h.avgHunger)}</b><span>avg hunger</span></div><div class="mini"><b>${h.workers}</b><span>workers</span></div><div class="mini"><b>${num2(h.risk)}</b><span>avg risk</span></div></div><div class="section">Members</div>${h.members.map(p=>`<div class="item" onclick="selectPerson(${p.id})"><div class="topline"><b>${p.name}</b><span>${p.age}</span></div><div class="muted">${p.job} • ${money2(p.wealth)} • health ${num2(p.health)} • hunger ${num2(p.hunger)}</div></div>`).join("")}<div class="section">Interpretation</div><div class="muted">Household figures are aggregated from the current individual state. The underlying V2 economy remains individual-level; this view exposes the household structure without hiding that distinction.</div>`;return}
- if(q.type==="org"){const o=W.orgs[q.i];el.innerHTML=`<div class="detailTitle">${o.name}</div><div class="detailSub">${o.type}</div><div class="statgrid"><div class="mini"><b>${o.members}</b><span>members</span></div><div class="mini"><b>${pct2(o.power)}</b><span>power</span></div></div><div class="section">Role</div><div class="muted">${o.type==="criminal"?"Coordinates offending and exploits weak enforcement.":o.type==="state"?"Provides coercive capacity and affects detection.":"Aggregates economic or social interests into influence."}</div>`;return}
- if(q.type==="town"){const t=uiTownStats(q.i);el.innerHTML=`<div class="detailTitle">${townLabel(q.i)}</div><div class="detailSub">Strategic inspection sector</div><div class="statgrid"><div class="mini"><b>${num2(t.people.length)}</b><span>population</span></div><div class="mini"><b>${money2(t.avgWealth)}</b><span>avg wealth</span></div><div class="mini"><b>${num2(t.avgHealth)}</b><span>avg health</span></div><div class="mini"><b>${num2(t.avgHunger)}</b><span>avg hunger</span></div></div><div class="section">Engine note</div><div class="muted">The current V2 simulation has one regional market. These sectors are a visualization layer, not three separate economic markets.</div>`}
+ const el=document.getElementById("inspector");
+ if(!selected){el.innerHTML=`<div class="title">Observer's Court</div><div class="sub">Select anything in the living world.</div><div class="section">What is simulated</div><div class="muted">Agents forecast prices from their local knowledge, choose food based on calories per silver, firms compare expected revenue with input costs, businesses order scarce inputs, production consumes physical inventories, and persistent shortages propagate into hunger, health and mortality.</div><div class="section">Supply chains</div><div class="flow"><div class="node"><b>Grain</b>farms</div><span class="arrow">→</span><div class="node"><b>Flour</b>mills</div><span class="arrow">→</span><div class="node"><b>Bread</b>bakeries</div><span class="arrow">→</span><div class="node"><b>Households</b></div></div>`;return}
+ if(selected.type==="business"){const b=W.businesses.find(x=>x.id===selected.id);el.innerHTML=b?businessDetail(b):"Missing business"}
+ if(selected.type==="household"){const h=W.households[selected.id];el.innerHTML=h?householdDetail(h):"Missing household"}
+ if(selected.type==="person"){const p=W.people.find(x=>x.id===selected.id);el.innerHTML=p?personDetail(p):"Missing resident"}
 }
-function renderUI(){
- document.getElementById("topDate").textContent=W.year+" / "+W.day;document.getElementById("topPop").textContent=W.people.length.toLocaleString();document.getElementById("topTreasury").textContent=Math.round(W.treasury)+"s";document.getElementById("topGrain").textContent=Math.round(W.markets.grain.stock);document.getElementById("topPrice").textContent=W.markets.grain.price.toFixed(2)+"s";
- document.getElementById("mainContent").innerHTML=uiMain();renderInspector();if(UI2.tab==="analytics")setTimeout(renderChart,0);
+function renderMode(){
+ const v=document.getElementById("view");
+ if(mode==="world"){v.innerHTML=`<div class="overlay"><div class="panel"><h3>Living World</h3><div class="muted">3D top-down economic landscape. Current season: <b>${season()}</b>. Regional weather affects agricultural output and transport reliability. Farms, mills, bakeries, workshops, merchants, roads, fields, households and the river are rendered as live simulation objects.</div></div></div>`;return}
+ if(mode==="economy"){const rows=W.regions.flatMap(r=>Object.entries(r.markets).map(([g,m])=>`<tr><td>${r.name}</td><td>${g}</td><td>${money(m.price)}</td><td>${fmt(m.stock)}</td><td>${fmt(m.production)}</td><td>${fmt(m.demand)}</td><td class="${m.unmet>0?"bad":""}">${fmt(m.unmet)}</td></tr>`)).join("");v.innerHTML=`<div class="overlay"><div class="panel"><h3>Regional Market Clearing</h3><div class="muted">Prices now clear against physical local inventories. A shortage in one region does not magically create stock there; trade must pay transport and consume time.</div><div class="scroll"><table class="table"><tr><th>Region</th><th>Good</th><th>Price</th><th>Stock</th><th>Prod.</th><th>Demand</th><th>Unmet</th></tr>${rows}</table></div></div></div>`;return}
+ if(mode==="supply"){v.innerHTML=`<div class="overlay"><div class="panel"><h3>Spatial Production Web</h3><div class="muted">Inputs are bought where they exist, then carts spend time and money moving them between regions. Price differences are therefore endogenous to geography.</div><div class="section">Grain chain</div><div class="flow"><div class="node"><b>Farmers</b>grain</div><span class="arrow">→</span><div class="node"><b>Millers</b>flour</div><span class="arrow">→</span><div class="node"><b>Bakers</b>bread</div><span class="arrow">→</span><div class="node"><b>Households</b>calories</div></div><div class="flow"><div class="node"><b>Farmers</b>wool</div><span class="arrow">→</span><div class="node"><b>Weavers</b>cloth</div><span class="arrow">→</span><div class="node"><b>People</b>clothing</div></div><div class="flow"><div class="node"><b>Smiths</b>iron</div><span class="arrow">→</span><div class="node"><b>Tools</b>capacity</div><span class="arrow">→</span><div class="node"><b>Producers</b>output</div></div></div></div>`;return}
+ if(mode==="households"){const q=window._search||"";const hs=W.households.filter(h=>h.name.toLowerCase().includes(q)).slice(0,120);v.innerHTML=`<div class="overlay"><div class="panel"><h3>Households</h3><div class="search"><input placeholder="Search household" value="${q}" oninput="window._search=this.value.toLowerCase();renderMode()"></div><div class="scroll"><table class="table"><tr><th>Household</th><th>Members</th><th>Cash</th><th>Health</th><th>Hunger</th></tr>${hs.map(h=>{let ps=h.members.map(id=>W.people.find(p=>p.id===id)).filter(Boolean);return`<tr class="click" onclick="setSelected('household',${h.id})"><td>${h.name}</td><td>${ps.length}</td><td>${money(h.cash)}</td><td>${fmt(ps.reduce((s,p)=>s+p.health,0)/Math.max(1,ps.length))}</td><td>${fmt(ps.reduce((s,p)=>s+p.hunger,0)/Math.max(1,ps.length))}</td></tr>`}).join("")}</table></div></div></div>`;return}
+ if(mode==="people"){const q=window._search||"";const ps=W.people.filter(p=>p.name.toLowerCase().includes(q)||p.job.includes(q)).slice(0,140);v.innerHTML=`<div class="overlay"><div class="panel"><h3>Residents</h3><div class="search"><input placeholder="Name or occupation" value="${q}" oninput="window._search=this.value.toLowerCase();renderMode()"></div><div class="scroll"><table class="table"><tr><th>Name</th><th>Age</th><th>Job</th><th>Wealth</th><th>Hunger</th><th>Goal</th></tr>${ps.map(p=>`<tr class="click" onclick="setSelected('person',${p.id})"><td>${p.name}</td><td>${p.age}</td><td>${p.job}</td><td>${money(p.wealth)}</td><td>${fmt(p.hunger)}</td><td>${p.goal}</td></tr>`).join("")}</table></div></div></div>`;return}
+ if(mode==="organizations"){v.innerHTML=`<div class="overlay"><div class="panel"><h3>Economic Institutions</h3><div class="row"><span>Merchants</span><b>${W.businesses.filter(b=>b.type==="merchant").length}</b></div><div class="row"><span>Firms</span><b>${W.businesses.length}</b></div><div class="row"><span>Active input orders</span><b>${W.orders.length}</b></div><div class="row"><span>Recorded events</span><b>${W.events.length}</b></div><div class="row"><span>Carts en route</span><b>${W.carts.length}</b></div><div class="row"><span>Bankrupt firms</span><b>${W.businesses.filter(b=>b.bankrupt).length}</b></div><div class="row"><span>Outstanding household debt</span><b>${money(W.households.reduce((s,h)=>s+h.debt,0))}</b></div><div class="section">Recent events</div>${W.events.slice(0,20).map(e=>`<div class="event">${e}</div>`).join("")}</div></div>`;return}
+ if(mode==="chronicle"){const g=W.priceHistory.grain||[];const b=W.priceHistory.bread||[];v.innerHTML=`<div class="overlay"><div class="panel"><h3>Chronicle</h3><canvas id="chart" width="450" height="230" style="width:100%;height:230px"></canvas><div class="muted">Gold: grain price • Blue: bread price. The chart is generated from the live simulation history.</div></div></div>`;setTimeout(()=>drawChart(g,b),0)}
 }
-const simulationRender=render;render=function(){simulationRender();renderUI()};
-captureHistory();renderUI();
+function drawChart(a,b){const c=document.getElementById("chart");if(!c)return;const x=c.getContext("2d"),w=c.width,h=c.height;x.clearRect(0,0,w,h);x.strokeStyle="#30352e";for(let i=1;i<5;i++){x.beginPath();x.moveTo(0,i*h/5);x.lineTo(w,i*h/5);x.stroke()}const max=Math.max(...a,...b,1),min=0;[[a,"#c9a866","grain"],[b,"#7899b9","bread"]].forEach(([arr,col,label],j)=>{x.strokeStyle=col;x.lineWidth=2;x.beginPath();arr.forEach((v,i)=>{const xx=i/(Math.max(1,arr.length-1))*w,yy=h-(v-min)/(max-min)*h;i?x.lineTo(xx,yy):x.moveTo(xx,yy)});x.stroke();x.fillStyle=col;x.font="11px sans-serif";x.fillText(label,10+j*90,15)})}
+function renderTop(){document.getElementById("season").textContent=season();document.getElementById("weather").textContent=pick(W.regions).weather;document.getElementById("date").textContent=`${W.year} / ${W.day}`;document.getElementById("pop").textContent=W.people.filter(p=>p.alive).length.toLocaleString();document.getElementById("grain").textContent=fmt(W.markets.grain.stock);document.getElementById("gprice").textContent=money(W.markets.grain.price);document.getElementById("money").textContent=money(W.people.reduce((s,p)=>s+(p.alive?p.wealth:0),0));document.getElementById("daybar").style.width=(W.day/365*100)+"%"}
+function renderAll(){renderTop();renderMode();renderInspector()}
+init();buildWorld();renderAll();
 </script>
-</body></html>
+</body>
+</html>
