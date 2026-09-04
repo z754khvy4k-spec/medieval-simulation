@@ -1,0 +1,93 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#151515"><link rel="manifest" href="./manifest.webmanifest"><title>Medieval Simulation</title>
+<style>
+body{margin:0;background:#111;color:#eee;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{position:sticky;top:0;background:#151515ee;backdrop-filter:blur(10px);padding:12px;border-bottom:1px solid #333;z-index:2}
+h1{font-size:20px;margin:0}.muted{color:#999;font-size:12px}.bar{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+button,input{background:#222;color:#eee;border:1px solid #444;border-radius:9px;padding:9px 11px}main{max-width:1100px;margin:auto;padding:12px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.card,.panel{background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:11px;margin-top:9px}
+.label{color:#999;font-size:11px}.value{font-size:20px;margin-top:3px}.tabs{display:flex;gap:7px;overflow:auto;margin-top:12px}
+.tab.active{border-color:#d6b36a;color:#d6b36a}.row{display:flex;justify-content:space-between;border-bottom:1px solid #292929;padding:8px 0}
+table{width:100%;border-collapse:collapse;font-size:12px}th,td{text-align:left;padding:7px;border-bottom:1px solid #292929}th{color:#999}
+.scroll{overflow:auto}.log{height:260px;overflow:auto;font-size:12px}.log div{padding:5px 0;border-bottom:1px solid #262626}
+@media(max-width:700px){.grid{grid-template-columns:repeat(2,1fr)}}
+</style></head>
+<body>
+<header><h1>Medieval Simulation</h1><div id="date" class="muted"></div>
+<div class="bar"><button onclick="step(1)">+1 Day</button><button onclick="step(7)">+1 Week</button><button onclick="step(30)">+1 Month</button><button onclick="run()" id="run">▶ Run</button><button onclick="reset()">Reset</button></div></header>
+<main><div id="stats" class="grid"></div><div class="tabs">
+<button class="tab active" onclick="tab('overview',this)">Overview</button><button class="tab" onclick="tab('economy',this)">Economy</button>
+<button class="tab" onclick="tab('people',this)">People</button><button class="tab" onclick="tab('crime',this)">Crime</button>
+<button class="tab" onclick="tab('politics',this)">Politics</button><button class="tab" onclick="tab('info',this)">Information</button></div><div id="content"></div></main>
+<script>
+const N=["Aldric","Agnes","Beatrice","Bernard","Cecily","Edmund","Eleanor","Geoffrey","Hugh","Isabel","John","Katherine","Martin","Matilda","Nicholas","Oswin","Peter","Robert","Simon","Thomas","Walter","William"];
+const S=["Ashford","Baker","Black","Cooper","Fletcher","Harper","Miller","Parker","Reed","Smith","Taylor","Turner","Ward","Webb","Wright"];
+const JOBS=["farmer","miller","baker","weaver","smith","carpenter","merchant","innkeeper","laborer","guard","priest","scribe","fisher"];
+const GOODS={grain:{base:1,prod:"farmer",food:true},flour:{base:1.7,prod:"miller"},bread:{base:2.4,prod:"baker",food:true},cloth:{base:4.5,prod:"weaver"},tools:{base:6,prod:"smith"},wood:{base:1.8,prod:"carpenter"},fish:{base:2.2,prod:"fisher",food:true}};
+let W,active="overview",timer=null;
+const r=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+function npc(i){return {id:i,name:pick(N)+" "+pick(S),age:Math.floor(r(16,72)),job:pick(JOBS),wealth:Math.max(2,r(8,80)),food:r(4,14),energy:r(.5,1),health:r(.55,1),risk:r(.05,.8),law:r(.2,.9),goal:pick(["earn wealth","raise family","gain status","protect household","avoid hunger","expand trade"]),memory:[],knowledge:{}}}
+function init(){
+ W={day:1,year:1284,people:[],markets:{},orgs:[
+ {name:"Merchants' Guild",type:"guild",members:34,power:.48},{name:"Weavers' Guild",type:"guild",members:27,power:.31},{name:"Town Watch",type:"state",members:42,power:.55}],crimes:[],events:[],treasury:850,tax:.08,running:false};
+ for(let i=0;i<1200;i++)W.people.push(npc(i));
+ for(const g in GOODS)W.markets[g]={price:GOODS[g].base,stock:r(250,700),demand:r(180,500),volume:0};
+ log("The simulation begins. Residents, markets, institutions and information networks are active."); render();
+}
+function log(x){W.events.unshift("["+W.year+" / day "+W.day+"] "+x);if(W.events.length>250)W.events.pop()}
+function crime(p){
+ const type=pick(["theft","smuggling","fraud","burglary"]), value=Math.round(r(2,18));
+ const detected=Math.random()<(.08+(1-p.law)*.22);
+ W.crimes.unshift({year:W.year,type,actor:p.name,value,detected});p.memory.push({type:"crime",day:W.day});
+ if(detected){p.law=Math.max(.05,p.law-.04);log(p.name+" was caught attempting "+type+".")}
+ else{p.wealth+=value;log(type+" occurred; the culprit escaped detection.")}
+ if(type==="theft"&&!W.orgs.some(o=>o.type==="criminal"))W.orgs.push({name:"Northside Thieves",type:"criminal",members:5,power:.08});
+}
+function tick(){
+ W.day++; if(W.day>365){W.day=1;W.year++;annual()}
+ for(const g in GOODS){
+  const m=W.markets[g],spec=GOODS[g],workers=W.people.filter(p=>p.job===spec.prod).length;
+  m.stock+=workers*r(.035,.075); const consume=W.people.length*r(.008,.022)*(spec.food?1.8:.35);
+  m.stock-=consume;m.demand=Math.max(20,consume*25);
+  const scarcity=Math.max(.35,Math.min(3,(m.demand+80)/(m.stock+80)));
+  m.price*=1+(scarcity-1)*.035+r(-.012,.012);m.price=Math.max(spec.base*.35,Math.min(spec.base*4,m.price));m.volume=Math.round(consume);
+ }
+ for(const p of W.people){
+  p.energy=Math.max(0,p.energy-r(.008,.022));p.food-=r(.008,.02);p.wealth+=r(.05,.18)*(p.job==="merchant"?2:p.job==="smith"?1.5:1);
+  if(p.food<2){let c=W.markets.grain.price;if(p.wealth>c){p.wealth-=c;p.food+=3}else p.health-=.006}
+  if(p.energy<.2)p.energy+=.06;
+  if(p.food<1&&Math.random()<p.risk*.012)crime(p);
+  if(Math.random()<.002)p.memory.push({type:"grain price",value:W.markets.grain.price});
+  if(p.memory.length>18)p.memory.shift();
+ }
+ if(Math.random()<.18){let price=W.markets.grain.price;for(let i=0;i<Math.floor(r(2,10));i++){let p=pick(W.people);p.knowledge.grain={value:price,age:0}}}
+ for(const o of W.orgs){o.members=Math.max(3,Math.round(o.members*(1+r(-.004,.008))));o.power=Math.max(.05,Math.min(1,o.power+r(-.003,.004)))}
+ if(Math.random()<.015)politicsEvent();if(Math.random()<.012)emerge();
+}
+function annual(){
+ const deaths=W.people.filter(p=>p.health<.1).length,births=Math.round(W.people.length*.012);
+ W.people=W.people.filter(p=>p.health>=.1);for(let i=0;i<births;i++)W.people.push(npc(W.people.length+Math.floor(Math.random()*99999)));
+ W.treasury+=W.people.length*r(.3,.8)*W.tax;log("Annual accounting: "+births+" births, "+deaths+" deaths. Treasury: "+W.treasury.toFixed(0)+" silver.");
+}
+function politicsEvent(){
+ const x=pick(["tax","watch","guild"]);
+ if(x==="tax"){W.tax=Math.max(.04,Math.min(.18,W.tax+r(-.01,.015)));log("The council adjusted market taxes to "+(W.tax*100).toFixed(1)+"%.")}
+ if(x==="watch"){let o=W.orgs.find(x=>x.name==="Town Watch");o.members+=Math.round(r(-2,5));log("The council reallocates resources to the town watch.")}
+ if(x==="guild"){let gs=W.orgs.filter(x=>x.type==="guild");let o=pick(gs);o.power=Math.min(1,o.power+.03);log(o.name+" gains influence over the town council.")}
+}
+function emerge(){let poor=W.people.filter(p=>p.wealth<4).length;if(poor>100&&!W.orgs.some(o=>o.name==="Laborers' Brotherhood")){W.orgs.push({name:"Laborers' Brotherhood",type:"association",members:18,power:.12});log("Persistent wage pressure produces an emergent labor association.")}}
+function step(n){for(let i=0;i<n;i++)tick();render()}
+function run(){W.running=!W.running;document.getElementById("run").textContent=W.running?"⏸ Pause":"▶ Run";if(W.running&&!timer)timer=setInterval(()=>{if(W.running){for(let i=0;i<3;i++)tick();render()}},350)}
+function reset(){if(timer){clearInterval(timer);timer=null}init()}
+function stats(){let avg=W.people.reduce((a,p)=>a+p.wealth,0)/W.people.length;return '<div class="card"><div class="label">DATE</div><div class="value">'+W.year+'</div><div class="muted">Day '+W.day+'/365</div></div><div class="card"><div class="label">POPULATION</div><div class="value">'+W.people.length.toLocaleString()+'</div><div class="muted">residents</div></div><div class="card"><div class="label">AVG WEALTH</div><div class="value">'+avg.toFixed(1)+'s</div><div class="muted">per resident</div></div><div class="card"><div class="label">TREASURY</div><div class="value">'+W.treasury.toFixed(0)+'s</div><div class="muted">tax '+(W.tax*100).toFixed(1)+'%</div></div>'}
+function overview(){return '<div class="panel"><b>World state</b><div class="row"><span>Organizations</span><span>'+W.orgs.length+'</span></div><div class="row"><span>Recorded crimes</span><span>'+W.crimes.length+'</span></div><div class="row"><span>Information records</span><span>'+W.people.reduce((a,p)=>a+Object.keys(p.knowledge).length,0)+'</span></div><div class="row"><span>Grain price</span><span>'+W.markets.grain.price.toFixed(2)+'s</span></div></div><div class="panel"><b>Event stream</b><div class="log">'+W.events.slice(0,40).map(x=>'<div>'+x+'</div>').join('')+'</div></div>'}
+function economy(){let rows=Object.entries(W.markets).map(([g,m])=>'<tr><td>'+g+'</td><td>'+m.price.toFixed(2)+'s</td><td>'+m.stock.toFixed(0)+'</td><td>'+m.demand.toFixed(0)+'</td><td>'+m.volume+'</td></tr>').join('');let jr=JOBS.map(j=>'<div class="row"><span>'+j+'</span><span>'+W.people.filter(p=>p.job===j).length+'</span></div>').join('');return '<div class="panel"><b>Markets</b><div class="scroll"><table><tr><th>Commodity</th><th>Price</th><th>Stock</th><th>Demand</th><th>Volume</th></tr>'+rows+'</table></div></div><div class="panel"><b>Labor</b>'+jr+'</div>'}
+function people(){let q=(document.getElementById("search")||{}).value||"";let rows=W.people.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())).slice(0,100).map(p=>'<tr><td>'+p.name+'</td><td>'+p.age+'</td><td>'+p.job+'</td><td>'+p.wealth.toFixed(1)+'</td><td>'+p.food.toFixed(1)+'</td><td>'+p.goal+'</td></tr>').join('');return '<div class="panel"><input id="search" placeholder="Search residents..." value="'+q+'" oninput="render()"></div><div class="panel scroll"><table><tr><th>Name</th><th>Age</th><th>Job</th><th>Wealth</th><th>Food</th><th>Goal</th></tr>'+rows+'</table></div>'}
+function crimeTab(){return '<div class="panel"><b>Crime & enforcement</b><div class="row"><span>Incidents</span><span>'+W.crimes.length+'</span></div><div class="row"><span>Criminal organizations</span><span>'+W.orgs.filter(o=>o.type==="criminal").length+'</span></div><div class="scroll"><table><tr><th>Year</th><th>Type</th><th>Actor</th><th>Value</th><th>Detected</th></tr>'+W.crimes.slice(0,50).map(c=>'<tr><td>'+c.year+'</td><td>'+c.type+'</td><td>'+c.actor+'</td><td>'+c.value+'s</td><td>'+c.detected+'</td></tr>').join('')+'</table></div></div>'}
+function politics(){return '<div class="panel"><b>Institutions & organizations</b>'+W.orgs.map(o=>'<div class="row"><span><b>'+o.name+'</b><br><span class="muted">'+o.type+'</span></span><span>'+o.members+' members<br><span class="muted">power '+(o.power*100).toFixed(0)+'%</span></span></div>').join('')+'</div>'}
+function info(){let k=W.people.reduce((a,p)=>a+Object.keys(p.knowledge).length,0);return '<div class="panel"><b>Information ecology</b><div class="row"><span>Knowledge records held</span><span>'+k+'</span></div><div class="row"><span>Residents holding information</span><span>'+W.people.filter(p=>Object.keys(p.knowledge).length).length+'</span></div><p class="muted">NPCs receive partial information through observation and social propagation rather than omniscient world state. Memories are capacity-limited and therefore selective.</p></div>'}
+function tab(t,e){active=t;document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));e.classList.add("active");render()}
+function render(){document.getElementById("stats").innerHTML=stats();document.getElementById("date").textContent="Regional sandbox • "+W.people.length.toLocaleString()+" residents • imperfect information";document.getElementById("content").innerHTML=active==="overview"?overview():active==="economy"?economy():active==="people"?people():active==="crime"?crimeTab():active==="politics"?politics():info()}
+init();
+</script></body></html>
