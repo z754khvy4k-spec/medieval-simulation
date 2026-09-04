@@ -1,9 +1,0 @@
-{
-  "name": "The Living Realm \u2014 Medieval Simulation V4",
-  "short_name": "Living Realm",
-  "start_url": "./",
-  "display": "standalone",
-  "background_color": "#0b0d0c",
-  "theme_color": "#10110f",
-  "orientation": "landscape"
-}
