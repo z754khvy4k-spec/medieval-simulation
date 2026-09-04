@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#10110f">
-<title>The Living Realm — Economic Simulation V4</title>
+<title>The Living Realm — Economic Simulation V5</title>
 <style>
 :root{--bg:#0b0d0c;--panel:#151815eF;--panel2:#1b1e1a;--line:#30352e;--text:#ece8dc;--muted:#969b91;--gold:#c9a866;--green:#8aaa7b;--red:#c87969;--blue:#7899b9}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0b0d0c;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:12px}
@@ -22,10 +22,10 @@ button,input,select{font:inherit}button{color:var(--text);background:#191c19;bor
 </style>
 </head>
 <body>
-<div id="scene"></div>
+<div id="scene"></div><div id="engineError" style="display:none;position:absolute;inset:0;z-index:20;background:#0b0d0c;color:#ece8dc;padding:28px;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"><h2 style="font-family:Georgia,serif">The 3D engine could not load</h2><p>This build uses Three.js from cdnjs. Check that Safari has internet access, then reload the page.</p></div>
 <div id="hud">
 <header class="topbar">
- <div class="crest">✦</div><div class="brand">The Living Realm<small>Economic Observer • V4</small></div>
+ <div class="crest">✦</div><div class="brand">The Living Realm<small>Economic Observer • V5</small></div>
  <div class="res"><div><span>Year / Day</span><b id="date">1284 / 1</b></div><div><span>People</span><b id="pop">—</b></div><div><span>Grain</span><b id="grain">—</b></div><div><span>Grain Price</span><b id="gprice">—</b></div><div><span>Money</span><b id="money">—</b></div><div><span>Season</span><b id="season">—</b></div><div><span>Weather</span><b id="weather">—</b></div></div>
  <div class="time"><button onclick="advance(1)">1d</button><button onclick="advance(7)">1w</button><button onclick="advance(30)">1m</button><button class="gold" onclick="toggleRun()" id="run">▶</button></div>
 </header>
@@ -48,9 +48,9 @@ button,input,select{font:inherit}button{color:var(--text);background:#191c19;bor
 <div id="toast"></div><div class="cross"></div>
 </div>
 
-<script type="module">
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.179.1/build/three.module.js";
-import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.179.1/examples/jsm/controls/OrbitControls.js";
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.179.1/three.min.js"></script>
+<script>
+if(typeof THREE==="undefined"){document.getElementById("engineError").style.display="block";}
 /* =========================
    ECONOMIC SIMULATION V4
    ========================= */
@@ -595,11 +595,29 @@ function makeTree(x,z){
 function makeField(x,z){
  for(let i=0;i<7;i++){const row=box(7,.04,.25,0x66563a);row.position.set(x,z*0+0.02,z+i*.65);worldGroup.add(row)}
 }
+class SimpleWorldControls{
+ constructor(cam,el){
+  this.camera=cam;this.el=el;this.target=new THREE.Vector3(0,0,0);this.drag=false;this.lastX=0;this.lastY=0;
+  this.minDistance=8;this.maxDistance=85;this.theta=Math.atan2(cam.position.x,cam.position.z);this.phi=.72;this.radius=cam.position.distanceTo(this.target);
+  el.style.touchAction="none";
+  el.addEventListener("pointerdown",e=>{this.drag=true;this.lastX=e.clientX;this.lastY=e.clientY;try{el.setPointerCapture(e.pointerId)}catch(_){}});
+  el.addEventListener("pointermove",e=>{if(!this.drag)return;const dx=e.clientX-this.lastX,dy=e.clientY-this.lastY;this.lastX=e.clientX;this.lastY=e.clientY;this.theta-=dx*.008;this.phi=clamp(this.phi+dy*.006,.28,1.38);this.apply()});
+  el.addEventListener("pointerup",e=>{this.drag=false;try{el.releasePointerCapture(e.pointerId)}catch(_){}});
+  el.addEventListener("pointercancel",()=>this.drag=false);
+  el.addEventListener("wheel",e=>{e.preventDefault();this.radius=clamp(this.radius*Math.exp(e.deltaY*.001),this.minDistance,this.maxDistance);this.apply()},{passive:false});
+ }
+ apply(){
+  const p=this.phi,r=this.radius,t=this.theta;
+  this.camera.position.set(this.target.x+r*Math.sin(p)*Math.sin(t),this.target.y+r*Math.cos(p),this.target.z+r*Math.sin(p)*Math.cos(t));
+  this.camera.lookAt(this.target);
+ }
+ update(){this.camera.lookAt(this.target)}
+} 
 function buildWorld(){
  scene=new THREE.Scene();scene.background=new THREE.Color(0x0b100d);scene.fog=new THREE.Fog(0x0b100d,55,110);
  camera=new THREE.PerspectiveCamera(48,1,.1,180);camera.position.set(42,46,42);
  renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:"high-performance"});renderer.setPixelRatio(Math.min(devicePixelRatio,1.8));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;document.getElementById("scene").appendChild(renderer.domElement);
- controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.08;controls.maxPolarAngle=Math.PI*.48;controls.minDistance=8;controls.maxDistance=85;controls.target.set(0,0,0);
+ controls=new SimpleWorldControls(camera,renderer.domElement);controls.target.set(0,0,0);
  const amb=new THREE.HemisphereLight(0xc6d0bd,0x30332c,2.2);scene.add(amb);const sun=new THREE.DirectionalLight(0xffdfad,2.5);sun.position.set(-25,55,15);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);scene.add(sun);
  const ground=box(120,.3,120,0x34382f);ground.position.y=-.18;scene.add(ground);
  worldGroup=new THREE.Group();scene.add(worldGroup);
@@ -625,7 +643,7 @@ function pickWorld(e){
  if(o.userData.kind==="business"){selected={type:"business",id:o.userData.id};renderInspector()}
  else if(o.userData.kind==="household"){selected={type:"household",id:o.userData.id};renderInspector()}
 }
-function setCamera(which){camMode=which;const pos={overview:[42,46,42],close:[18,18,18],north:[0,45,55],south:[0,45,-55]}[which]||[42,46,42];camera.position.set(...pos);controls.target.set(0,0,0)}
+function setCamera(which){camMode=which;const pos={overview:[42,46,42],close:[18,18,18],north:[0,45,55],south:[0,45,-55]}[which]||[42,46,42];camera.position.set(...pos);controls.target.set(0,0,0);controls.radius=camera.position.distanceTo(controls.target);controls.theta=Math.atan2(camera.position.x,camera.position.z);controls.phi=Math.acos(clamp(camera.position.y/Math.max(.01,controls.radius),-.999,.999));controls.apply()}
 let cartMeshes=[];
 function syncCarts(){
   for(const m of cartMeshes)worldGroup.remove(m);cartMeshes=[];
@@ -638,8 +656,7 @@ function syncCarts(){
     g.position.set(a.cx+(b.cx-a.cx)*t,.02,a.cz+(b.cz-a.cz)*t);worldGroup.add(g);cartMeshes.push(g);
   }
 }
-const oldAnimate=animate;
-animate=function(){requestAnimationFrame(animate);syncCarts();controls.update();renderer.render(scene,camera)}
+function animate(){requestAnimationFrame(animate);if(!renderer)return;syncCarts();if(controls)controls.update();renderer.render(scene,camera)}
 
 /* =========================
    UI
@@ -684,7 +701,7 @@ function renderMode(){
  if(mode==="chronicle"){const g=W.priceHistory.grain||[];const b=W.priceHistory.bread||[];v.innerHTML=`<div class="overlay"><div class="panel"><h3>Chronicle</h3><canvas id="chart" width="450" height="230" style="width:100%;height:230px"></canvas><div class="muted">Gold: grain price • Blue: bread price. The chart is generated from the live simulation history.</div></div></div>`;setTimeout(()=>drawChart(g,b),0)}
 }
 function drawChart(a,b){const c=document.getElementById("chart");if(!c)return;const x=c.getContext("2d"),w=c.width,h=c.height;x.clearRect(0,0,w,h);x.strokeStyle="#30352e";for(let i=1;i<5;i++){x.beginPath();x.moveTo(0,i*h/5);x.lineTo(w,i*h/5);x.stroke()}const max=Math.max(...a,...b,1),min=0;[[a,"#c9a866","grain"],[b,"#7899b9","bread"]].forEach(([arr,col,label],j)=>{x.strokeStyle=col;x.lineWidth=2;x.beginPath();arr.forEach((v,i)=>{const xx=i/(Math.max(1,arr.length-1))*w,yy=h-(v-min)/(max-min)*h;i?x.lineTo(xx,yy):x.moveTo(xx,yy)});x.stroke();x.fillStyle=col;x.font="11px sans-serif";x.fillText(label,10+j*90,15)})}
-function renderTop(){document.getElementById("season").textContent=season();document.getElementById("weather").textContent=pick(W.regions).weather;document.getElementById("date").textContent=`${W.year} / ${W.day}`;document.getElementById("pop").textContent=W.people.filter(p=>p.alive).length.toLocaleString();document.getElementById("grain").textContent=fmt(W.markets.grain.stock);document.getElementById("gprice").textContent=money(W.markets.grain.price);document.getElementById("money").textContent=money(W.people.reduce((s,p)=>s+(p.alive?p.wealth:0),0));document.getElementById("daybar").style.width=(W.day/365*100)+"%"}
+function renderTop(){const grain=W.regions?W.regions.reduce((s,r)=>s+(r.markets.grain?.stock||0),0):W.markets.grain.stock;const gp=W.regions?W.regions.reduce((s,r)=>s+(r.markets.grain?.price||0),0)/Math.max(1,W.regions.length):W.markets.grain.price;document.getElementById("season").textContent=season();document.getElementById("weather").textContent=W.regions?W.regions.map(r=>r.weather).filter((v,i,a)=>a.indexOf(v)===i).slice(0,2).join(" / "):"clear";document.getElementById("date").textContent=`${W.year} / ${W.day}`;document.getElementById("pop").textContent=W.people.filter(p=>p.alive).length.toLocaleString();document.getElementById("grain").textContent=fmt(grain);document.getElementById("gprice").textContent=money(gp);document.getElementById("money").textContent=money(W.people.reduce((s,p)=>s+(p.alive?p.wealth:0),0));document.getElementById("daybar").style.width=(W.day/365*100)+"%"}
 function renderAll(){renderTop();renderMode();renderInspector()}
 init();buildWorld();renderAll();
 </script>
