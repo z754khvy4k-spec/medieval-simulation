@@ -1,0 +1,559 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#0a0e0b"><title>The Living Realm</title><style>:root{--bg:#0a0e0b;--surface:#121812ee;--surface2:#1a211b;--line:#303b32;--text:#f1eee5;--muted:#899389;--gold:#d5b570;--danger:#d77e6d}*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}button,input{font:inherit}button{color:inherit}#app{position:fixed;inset:0;overflow:hidden}#worldCanvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}.topbar{position:absolute;z-index:5;top:0;left:0;right:0;height:82px;padding:calc(env(safe-area-inset-top) + 9px) 14px 8px;display:flex;align-items:flex-end;gap:9px;background:linear-gradient(#0a0e0cf8,#0a0e0cd9 68%,transparent);pointer-events:none}.brandMark{width:38px;height:38px;border:1px solid #675638;border-radius:13px;background:#292519;display:grid;place-items:center;color:var(--gold);font-size:18px}.appTitle{font:17px Georgia,serif;line-height:18px}.appSub{font-size:8px;letter-spacing:1.1px;color:var(--muted);text-transform:uppercase;margin-top:3px}.stats{margin-left:auto;display:flex;gap:12px;align-items:flex-end}.miniStat b{display:block;font-size:11px}.miniStat span{display:block;color:var(--muted);font-size:7px;text-transform:uppercase;letter-spacing:.6px;margin-top:2px}.play{pointer-events:auto;width:40px;height:40px;border-radius:13px;border:1px solid #6b5939;background:#292519;color:var(--gold);font-size:15px}.topPill{position:absolute;z-index:5;top:calc(env(safe-area-inset-top) + 84px);left:14px;padding:7px 10px;border:1px solid #334036;border-radius:999px;background:#101610d9;backdrop-filter:blur(18px);font-size:9px;color:#c6ccc2}.leftRail{position:absolute;z-index:5;left:12px;top:calc(env(safe-area-inset-top) + 128px);display:flex;flex-direction:column;gap:6px}.navItem{width:48px;height:48px;border:1px solid #334036;border-radius:15px;background:#111711d9;backdrop-filter:blur(15px);color:#9ca49b;font-size:19px;box-shadow:0 7px 20px #0005}.navItem.active{background:#292519;border-color:#7a6741;color:#e2c886}.mapControls{position:absolute;z-index:5;right:12px;top:calc(env(safe-area-inset-top) + 128px);display:flex;flex-direction:column;gap:6px}.mapBtn{width:43px;height:43px;border:1px solid #334036;border-radius:14px;background:#111711d9;color:#d2d6ce;backdrop-filter:blur(15px);font-size:16px}#view{position:absolute;z-index:4;left:72px;right:12px;top:calc(env(safe-area-inset-top) + 128px);bottom:calc(82px + env(safe-area-inset-bottom));overflow:auto;pointer-events:none}.viewPanel{pointer-events:auto;max-width:520px;padding:18px;border:1px solid #334036;border-radius:22px;background:#101610e8;backdrop-filter:blur(22px);box-shadow:0 20px 60px #0009}.eyebrow{font-size:8px;letter-spacing:1.5px;color:#8c968c;text-transform:uppercase}.pageTitle,.heroTitle{font:24px Georgia,serif;margin-top:4px}.pageSub,.heroSub{font-size:11px;line-height:1.45;color:#929b91;margin:4px 0 14px}.dataCard,.listRow{width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;background:none;border:0;border-bottom:1px solid #29332b;text-align:left}.dataCard b,.listRow b{display:block;font-size:12px}.dataCard small,.listRow small{display:block;color:#7e887e;font-size:9px;margin-top:3px}.dataCard strong,.listRow strong{font-size:12px}.bigChain{display:flex;align-items:center;gap:7px;overflow:auto;padding:8px 0}.bigChain div{min-width:78px;padding:11px;border:1px solid #334036;border-radius:14px;background:#171e18}.bigChain b{display:block;color:var(--gold);font-size:9px}.bigChain small{color:#818a80}.bigChain i{color:#6e776e}.insight{padding:12px;border-radius:14px;background:#1a211b}.insight b{display:block;font-size:10px}.insight span{display:block;color:#919a90;font-size:10px;line-height:1.4;margin-top:3px}.searchBox{width:100%;padding:11px 12px;border:1px solid #344037;border-radius:12px;background:#0e130f;color:#eee;outline:none;margin:5px 0 8px}.metricLine{display:flex;justify-content:space-between;padding:13px 0;border-bottom:1px solid #29332b}.metricLine span{color:#929a90}#sheet{position:absolute;z-index:10;left:0;right:0;bottom:0;max-height:72vh;overflow:auto;padding:0 16px calc(14px + env(safe-area-inset-bottom));border-top:1px solid #3a453c;border-radius:26px 26px 0 0;background:#111711f4;backdrop-filter:blur(25px);box-shadow:0 -18px 60px #0009;transform:translateY(calc(100% - 68px));transition:transform .25s ease}.sheet.open{transform:translateY(0)}.grab{width:38px;height:4px;border-radius:4px;background:#5d665d;margin:9px auto 12px}.sheetClose{position:absolute;right:14px;top:11px;width:32px;height:32px;border-radius:11px;border:1px solid #364137;background:#1b221c;color:#a0a79f}.sheetTitle{font:22px Georgia,serif;margin-top:4px}.sheetSub{font-size:10px;color:#818a80;margin-top:3px}.statGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:14px 0}.statGrid>div{padding:10px;border-radius:13px;background:#192019;border:1px solid #29342c}.statGrid b{font-size:14px}.statGrid span{display:block;color:#7f897e;font-size:8px;text-transform:uppercase;letter-spacing:.5px;margin-top:3px}.sectionTitle{font-size:8px;text-transform:uppercase;letter-spacing:1.2px;color:#8a9388;margin:16px 0 7px}.rows>div{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #29332b;font-size:10px}.rows span{color:#899288}.chain{display:flex;align-items:center;gap:8px}.chain span,.chain strong{padding:7px 10px;border-radius:10px;background:#1b231c;border:1px solid #303b31;font-size:10px}.chain i{color:#717a70}.personRow{width:100%;display:flex;justify-content:space-between;padding:10px 0;border:0;border-bottom:1px solid #29332b;background:none;text-align:left}.personRow b,.personRow small{display:block}.personRow small{color:#818a80;font-size:9px;margin-top:2px}.danger{color:var(--danger)}.quickGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}.quickGrid button{padding:13px;border-radius:15px;background:#182018;border:1px solid #2e3a30;text-align:left}.quickGrid b,.quickGrid small{display:block}.quickGrid small{font-size:9px;color:#818a80;margin-top:3px}#analyticsCanvas{width:100%;height:230px;border-radius:14px;margin-top:12px}.bottomBar{position:absolute;z-index:7;left:12px;right:12px;bottom:calc(9px + env(safe-area-inset-bottom));height:56px;padding:5px;display:flex;gap:4px;background:#111711e9;border:1px solid #354137;border-radius:20px;backdrop-filter:blur(20px);box-shadow:0 12px 40px #0008}.bottomBar button{flex:1;border:0;border-radius:15px;background:transparent;color:#8e978c;font-size:9px}.bottomBar .timeBtn{flex:0 0 42px;color:var(--gold);font-size:16px}@media(max-width:520px){.appTitle{font-size:15px}.stats{gap:7px}.miniStat:nth-child(2){display:none}.leftRail{left:9px}.navItem{width:44px;height:44px}.mapControls{right:9px}.mapBtn{width:40px;height:40px}#view{left:62px;right:9px;top:calc(env(safe-area-inset-top) + 128px)}}@media(min-width:700px){#sheet{left:auto;right:16px;bottom:16px;width:390px;border:1px solid #3a453c;border-radius:24px;max-height:70vh;transform:translateY(calc(100% + 20px));padding-bottom:16px}.sheet.open{transform:translateY(0)}.bottomBar{left:50%;right:auto;width:430px;transform:translateX(-50%)}.leftRail{left:18px}.mapControls{right:18px}}
+</style></head><body><div id="app"><canvas id="worldCanvas"></canvas><header class="topbar"><div class="brandMark">✦</div><div><div class="appTitle">The Living Realm</div><div class="appSub">Economic Observer</div></div><div class="stats"><div class="miniStat"><b id="date">—</b><span>date</span></div><div class="miniStat"><b id="pop">—</b><span>people</span></div><div class="miniStat"><b id="gprice">—</b><span>grain</span></div><button class="play" id="runBtn" onclick="toggleRun()">▶</button></div></header><div class="topPill"><span id="season">—</span> · <span id="weather">—</span> · <span id="runState">PAUSED</span></div><nav class="leftRail"><button class="navItem active" data-mode="world" onclick="setMode('world',this)">⌂</button><button class="navItem" data-mode="economy" onclick="setMode('economy',this)">◫</button><button class="navItem" data-mode="supply" onclick="setMode('supply',this)">⇄</button><button class="navItem" data-mode="households" onclick="setMode('households',this)">⌂</button><button class="navItem" data-mode="people" onclick="setMode('people',this)">♙</button><button class="navItem" data-mode="organizations" onclick="setMode('organizations',this)">◇</button><button class="navItem" data-mode="chronicle" onclick="setMode('chronicle',this)">⌁</button></nav><div class="mapControls"><button class="mapBtn" onclick="setCamera('overview')">◎</button><button class="mapBtn" onclick="zoomWorld(1.25)">＋</button><button class="mapBtn" onclick="zoomWorld(.8)">−</button></div><main id="view"></main><section id="sheet"><div class="grab"></div><button class="sheetClose" onclick="closeSheet()">×</button><div id="inspector"></div></section><div class="bottomBar"><button onclick="advance(1)">DAY</button><button onclick="advance(7)">WEEK</button><button onclick="advance(30)">MONTH</button><button class="timeBtn" id="runBtn2" onclick="toggleRun()">▶</button></div></div><script>
+
+/* =========================
+   ECONOMIC SIMULATION V4
+   ========================= */
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)), r=(a,b)=>a+Math.random()*(b-a), pick=a=>a[Math.floor(Math.random()*a.length)];
+const JOBS=["farmer","miller","baker","merchant","weaver","smith","carpenter","fisher","laborer","guard","priest","scribe"];
+const N=["Alden","Beatrice","Cedric","Edith","Gareth","Hugh","Isolde","Jon","Katherine","Martin","Nora","Otto","Peter","Robert","Sabine","Thomas","Ulric","William"];
+const S=["Ashford","Bennett","Clarke","Dane","Ellis","Fletcher","Graves","Hale","Kerr","Lang","Mason","North","Page","Reed","Stone","Turner","Vale"];
+const GOODS={
+ grain:{base:1,max:12,producer:"farmer",cal:1,food:true},
+ flour:{base:1.55,max:18,producer:"miller",food:false},
+ bread:{base:2.15,max:25,producer:"baker",cal:1.1,food:true},
+ fish:{base:1.8,max:20,producer:"fisher",cal:1,food:true},
+ wool:{base:1.35,max:18,producer:"farmer",food:false},
+ cloth:{base:3.5,max:40,producer:"weaver",food:false},
+ wood:{base:.8,max:12,producer:"carpenter",food:false},
+ iron:{base:3.2,max:35,producer:"smith",food:false},
+ tools:{base:7,max:80,producer:"smith",food:false},
+ fuel:{base:1.1,max:15,producer:"carpenter",food:false}
+};
+const RECIPES={
+ mill:{input:"grain",inQty:1.15,output:"flour",outQty:1},
+ bakery:{input:"flour",inQty:1.1,output:"bread",outQty:1.2},
+ loom:{input:"wool",inQty:1,output:"cloth",outQty:1},
+ forge:{input:"iron",inQty:.35,output:"tools",outQty:1},
+ carpenter:{input:"wood",inQty:1,output:"fuel",outQty:.75}
+};
+let W, selected=null, mode="world", timer=null, camMode="overview", simDays=0;
+function money(x){return (x||0).toFixed(1)+"s"} function fmt(x){return Number(x||0).toLocaleString(undefined,{maximumFractionDigits:1})}
+function makePerson(id,house){
+ const job=pick(JOBS),age=Math.floor(r(16,70));
+ return {id,name:pick(N)+" "+pick(S),age,job,household:house,wealth:r(12,70),health:r(.78,1),hunger:r(.03,.2),energy:r(.7,1),risk:r(.05,.8),law:r(.35,.95),skill:r(.75,1.3),goal:pick(["security","wealth","status","family","trade"]),alive:true,daysStarved:0,inventory:{},knowledge:{},memory:[],employer:null};
+}
+function business(id,type,owner){
+ const cfg={farm:["grain",null],mill:["flour","grain"],bakery:["bread","flour"],fishery:["fish",null],loom:["cloth","wool"],forge:["tools","iron"],carpenter:["fuel","wood"],merchant:["trade",null]}[type];
+ return {id,name:type[0].toUpperCase()+type.slice(1)+" #"+id,type,owner, cash:r(80,260), inventory:{},targetStock:15,employees:[],inputOrder:0,output:cfg[0],input:cfg[1],capacity:r(.7,1.5),efficiency:r(.8,1.2),lastProfit:0,expectedProfit:0,confidence:.55,location:{x:0,z:0}};
+}
+function init(){
+ W={year:1284,day:1,people:[],households:[],businesses:[],markets:{},orders:[],carts:[],events:[],treasury:900,tax:.08,priceHistory:{},populationHistory:[],running:false};
+ for(let g in GOODS)W.markets[g]={price:GOODS[g].base,stock:0,demand:0,sales:0,unmet:0,production:0,orders:0,daysSupply:0};
+ for(let h=0;h<360;h++){
+   const house={id:h,name:"Household "+(h+1),cash:r(18,100),food:r(1,4),members:[],rent:r(.08,.35),savingsTarget:r(20,100),confidence:r(.35,.8)};
+   W.households.push(house);
+   const n=Math.floor(r(2,5));
+   for(let j=0;j<n;j++){let p=makePerson(W.people.length,h);house.members.push(p.id);W.people.push(p)}
+ }
+ const types=["farm","farm","farm","farm","mill","bakery","fishery","loom","forge","carpenter","merchant"];
+ let bid=0;
+ for(const type of types)for(let i=0;i<(type==="farm"?6:2);i++){
+   const owner=pick(W.people);const b=business(bid++,type,owner.id);b.location=siteFor(type,bid);W.businesses.push(b);owner.employer=b.id; b.employees=[owner.id];
+ }
+ // Add laborers to businesses based on production capacity.
+ for(const b of W.businesses){
+   const needed=b.type==="farm"?7:b.type==="mill"?3:b.type==="bakery"?4:b.type==="merchant"?2:3;
+   const candidates=W.people.filter(p=>p.alive&&!p.employer).sort((a,c)=>c.skill-a.skill).slice(0,needed);
+   candidates.forEach(p=>{p.employer=b.id;b.employees.push(p.id)});
+ }
+ // Initial stocks deliberately create a functioning but fragile chain.
+ for(const g in GOODS)W.markets[g].stock=g==="grain"?1100:g==="flour"?110:g==="bread"?120:g==="fish"?160:g==="wool"?100:g==="iron"?90:g==="wood"?180:g==="fuel"?80:g==="tools"?35:60;
+ for(const g in GOODS)W.priceHistory[g]=[];
+ for(const b of W.businesses){if(b.input)b.inventory[b.input]=r(4,15);b.inventory[b.output]=r(3,12)}
+ log("V4 founded: firms now forecast margins, procure inputs, produce from physical inventories and compete for scarce resources.");
+}
+function siteFor(type,i){
+ const centers={farm:[-28,-18],mill:[-5,-10],bakery:[8,-7],fishery:[27,13],loom:[-15,18],forge:[16,20],carpenter:[4,27],merchant:[18,-20]};
+ const c=centers[type]||[0,0];return{x:c[0]+r(-5,5),z:c[1]+r(-5,5)};
+}
+function log(x){W.events.unshift(`[${W.year}/${W.day}] ${x}`);if(W.events.length>250)W.events.pop()}
+function expectedInputCost(b){
+ if(!b.input)return 0;return W.markets[b.input].price*(RECIPES[{mill:"mill",bakery:"bakery",loom:"loom",forge:"forge",carpenter:"carpenter"}[b.type]]?.inQty||1);
+}
+function expectedRevenue(b){
+ if(!b.output)return 0;const rec=RECIPES[{mill:"mill",bakery:"bakery",loom:"loom",forge:"forge",carpenter:"carpenter"}[b.type]];return W.markets[b.output].price*(rec?.outQty||1);
+}
+function hireFire(){
+ // Firms are economically intelligent: they hire when expected contribution margin
+ // exceeds wage, and shed labor when margins remain negative.
+ for(const b of W.businesses){
+   if(b.type==="farm"||b.type==="fishery"||b.type==="merchant")continue;
+   const margin=expectedRevenue(b)-expectedInputCost(b);
+   b.expectedProfit=margin*b.capacity;
+   const wage=1.0+W.markets[b.output].price*.035;
+   if(b.expectedProfit>wage*1.5 && b.employees.length<6){
+     const cand=W.people.filter(p=>p.alive&&!p.employer).sort((a,c)=>c.skill-a.skill)[0];
+     if(cand){cand.employer=b.id;b.employees.push(cand.id);log(`${b.name} hires ${cand.name} as demand improves.`)}
+   }
+   if(b.expectedProfit<wage*.35 && b.employees.length>1){
+     const pid=b.employees.pop(),p=W.people.find(x=>x.id===pid);if(p)p.employer=null;
+     log(`${b.name} reduces labor after persistent weak margins.`)
+   }
+ }
+}
+function businessProduction(){
+ for(const g in W.markets)W.markets[g].production=0;
+ for(const b of W.businesses){
+   if(!b.output)continue;
+   const rec=RECIPES[{mill:"mill",bakery:"bakery",loom:"loom",forge:"forge",carpenter:"carpenter"}[b.type]];
+   let labor=Math.max(.2,b.employees.length/3);
+   if(b.type==="farm"){
+     const q=b.capacity*b.efficiency*(1+r(.65,1.25));W.markets.grain.stock+=q;W.markets.grain.production+=q;b.cash+=q*W.markets.grain.price*.55;continue;
+   }
+   if(b.type==="fishery"){
+     const q=b.capacity*b.efficiency*(1+r(.7,1.2));W.markets.fish.stock+=q;W.markets.fish.production+=q;b.cash+=q*W.markets.fish.price*.55;continue;
+   }
+   const inputNeed=rec.inQty*labor*b.capacity;
+   const available=W.markets[rec.input].stock;
+   const actualIn=Math.min(inputNeed,available);
+   const units=actualIn/rec.inQty;
+   const out=units*rec.outQty*b.efficiency;
+   if(actualIn>0){W.markets[rec.input].stock-=actualIn;W.markets[b.output].stock+=out;W.markets[b.output].production+=out;b.inventory[rec.input]=(b.inventory[rec.input]||0)+actualIn}
+   if(units<inputNeed/rec.inQty*.65){b.confidence=clamp(b.confidence-.025,.05,1);if(W.day%5===0)log(`${b.name} cannot run at capacity: ${rec.input} is scarce.`)}
+   else b.confidence=clamp(b.confidence+.006,.05,1);
+   b.inventory[b.output]=(b.inventory[b.output]||0)+out;
+ }
+}
+function foodNeed(p){return .105*(p.age<18?.72:p.age>60?.9:1)}
+function householdDecision(h){
+ const members=h.members.map(id=>W.people.find(p=>p.id===id)).filter(p=>p&&p.alive);
+ if(!members.length)return;
+ let desired=members.reduce((s,p)=>s+foodNeed(p)*(1+2.8*p.hunger),0);
+ const foods=["bread","grain","fish"].sort((a,b)=>W.markets[a].price/(GOODS[a].cal||1)-W.markets[b].price/(GOODS[b].cal||1));
+ let budget=Math.max(0,h.cash*.28 + Math.max(0,h.cash-h.savingsTarget)*.25);
+ let got=0;
+ for(const g of foods){
+   const m=W.markets[g],cal=GOODS[g].cal||1;
+   const want=Math.max(0,(desired-got)/cal);
+   const affordable=budget/m.price;
+   const qty=Math.min(want,m.stock,affordable);
+   if(qty>0){m.stock-=qty;m.sales+=qty;m.demand+=want;m.unmet+=Math.max(0,want-qty);m.orders+=want;const cost=qty*m.price;budget-=cost;h.cash-=cost;got+=qty*cal}
+ }
+ const ration=clamp(got/Math.max(.01,desired),0,1);
+ members.forEach(p=>{p.hunger=clamp(p.hunger+(1-ration)*.65-ration*.09,0,2);p.energy=clamp(p.energy+.03,0,1);p.food=ration});
+ // Households save/invest according to confidence and goals.
+ if(h.cash>h.savingsTarget && h.confidence>.5){h.savingsTarget*=1.001}
+ else if(h.cash<h.savingsTarget*.35)h.confidence=clamp(h.confidence-.015,.05,1);
+}
+function businessProcurement(){
+ // Businesses submit rational input orders based on expected sales, current stock,
+ // price, cash and capacity. Merchants can satisfy orders from regional stock.
+ for(const b of W.businesses){
+   if(!b.input)continue;
+   const rec=RECIPES[{mill:"mill",bakery:"bakery",loom:"loom",forge:"forge",carpenter:"carpenter"}[b.type]];
+   const labor=Math.max(1,b.employees.length/3),desired=rec.inQty*labor*b.capacity;
+   const onHand=b.inventory[b.input]||0;
+   const need=Math.max(0,desired*2-onHand);
+   if(need>0 && b.cash>need*W.markets[b.input].price*.55){
+     W.orders.push({business:b.id,good:b.input,qty:need,limit:W.markets[b.input].price*1.12,age:0});
+     b.inputOrder=need;
+   }
+ }
+ // Match orders to available market stock; firms pay the market and cash leaves.
+ for(const o of W.orders){
+   const b=W.businesses.find(x=>x.id===o.business);if(!b)continue;
+   const m=W.markets[o.good];const qty=Math.min(o.qty,m.stock,b.cash/o.limit);
+   if(qty>0){m.stock-=qty;m.sales+=qty;m.demand+=o.qty;m.moneySpent=(m.moneySpent||0)+qty*m.price;b.cash-=qty*m.price;b.inventory[o.good]=(b.inventory[o.good]||0)+qty}
+ }
+ W.orders=[];
+}
+function merchants(){
+ for(const b of W.businesses.filter(x=>x.type==="merchant")){
+   const prices=Object.entries(W.markets).sort((a,b)=>b[1].price-a[1].price);
+   if(prices.length<2)continue;
+   const high=prices[0][0],low=prices[prices.length-1][0];
+   if(W.markets[high].unmet>0 && W.markets[low].stock>W.markets[low].demand*2){
+     const qty=Math.min(8,W.markets[low].stock*.05);
+     if(qty>0){W.markets[low].stock-=qty;W.markets[high].stock+=qty;log(`${b.name} arbitrages ${low} toward the high-price ${high} market.`)}
+   }
+ }
+}
+function prices(){
+ for(const g in GOODS){
+   const m=W.markets[g],base=GOODS[g].base,d=Math.max(.1,m.demand),coverage=m.stock/d;
+   m.daysSupply=coverage;
+   const pressure=clamp((3-coverage)/3,-1,1);
+   const unmet=clamp(m.unmet/d,0,2);
+   let change=.035*pressure+.04*unmet;
+   if(coverage>35)change-=.022;
+   if(m.stock<.001&&m.unmet>0)change+=.09;
+   m.price=clamp(m.price*(1+change+r(-.003,.003)),base*.35,GOODS[g].max);
+   W.priceHistory[g].push(m.price);if(W.priceHistory[g].length>240)W.priceHistory[g].shift();
+ }
+}
+function distributeIncome(){
+ for(const b of W.businesses){
+   const gross=(W.markets[b.output]?.sales||0)*W.markets[b.output].price;
+   const wage=b.employees.length*(.65+(W.markets[b.output]?.price||1)*.08);
+   b.cash+=gross*.45-wage;
+   b.lastProfit=gross*.45-wage-(b.inputOrder*(W.markets[b.input]?.price||0)*.3);
+   b.employees.forEach(id=>{const p=W.people.find(x=>x.id===id);if(p)p.wealth+=Math.max(.1,wage/Math.max(1,b.employees.length))})
+ }
+}
+function mortality(){
+ let deaths=0;
+ for(const p of W.people){
+   if(!p.alive)continue;
+   if(p.hunger>.55)p.health-=.003*p.hunger;
+   if(p.hunger>.9)p.health-=.008*p.hunger;
+   if(p.hunger>.72)p.daysStarved++;else p.daysStarved=Math.max(0,p.daysStarved-1);
+   if(p.daysStarved>12)p.health-=.012;
+   if(p.age>58)p.health-=.0005;
+   if(p.health<=0){p.alive=false;deaths++}
+ }
+ if(deaths)log(`${deaths} residents died after sustained physiological deprivation or age-related decline.`);
+ // Remove dead from household membership only; preserve records for inspector.
+ for(const h of W.households)h.members=h.members.filter(id=>{const p=W.people.find(x=>x.id===id);return p&&p.alive});
+}
+function births(){
+ if(W.day!==1)return;
+ const eligible=W.households.filter(h=>h.members.length>=2&&h.cash>8&&Math.random()<.012);
+ for(const h of eligible.slice(0,Math.max(0,Math.floor(W.people.length*.004)))){
+   const p=makePerson(W.people.length,h.id);p.age=0;p.job="laborer";p.wealth=0;p.hunger=.1;p.health=.9;p.employer=null;
+   W.people.push(p);h.members.push(p.id);log(`A child is born into ${h.name}.`);
+ }
+}
+function crime(){
+ for(const p of W.people){
+   if(!p.alive||p.hunger<.75)continue;
+   const desperation=p.hunger*.6+(p.wealth<3?.25:0);
+   if(Math.random()<desperation*.018){
+     const value=r(2,14),caught=Math.random()<.12+(1-p.law)*.18;
+     W.events.unshift(`[${W.year}/${W.day}] ${p.name} commits theft${caught?" and is caught":" and escapes detection"}.`);
+     p.memory.push({type:"crime",day:W.day});if(!caught)p.wealth+=value;else p.law=clamp(p.law-.05,.05,1);
+   }
+ }
+}
+function tick(){
+ W.day++;if(W.day>365){W.day=1;W.year++}
+ for(const g in W.markets){const m=W.markets[g];m.demand=0;m.sales=0;m.unmet=0;m.moneySpent=0;m.orders=0}
+ businessProduction();businessProcurement();
+ for(const h of W.households)householdDecision(h);
+ merchants();hireFire();distributeIncome();prices();mortality();births();crime();
+ // attention-limited economic knowledge
+ for(const p of W.people.filter(x=>x.alive)){
+   if(Math.random()<.035){const g=pick(["grain","flour","bread","fish"]);p.knowledge[g]={price:W.markets[g].price,age:0};p.memory.push({type:"market price",good:g,value:W.markets[g].price,day:W.day});if(p.memory.length>20)p.memory.shift()}
+   for(const k in p.knowledge){p.knowledge[k].age++;if(p.knowledge[k].age>45)delete p.knowledge[k]}
+ }
+ simDays++;
+ if(W.day%7===0)W.populationHistory.push(W.people.filter(p=>p.alive).length);
+}
+function advance(n){for(let i=0;i<n;i++)tick();renderAll()}
+function toggleRun(){W.running=!W.running;document.getElementById("run").textContent=W.running?"⏸":"▶";document.getElementById("status").textContent=W.running?"Running":"Paused";if(W.running&&!timer)timer=setInterval(()=>{for(let i=0;i<2;i++)tick();renderAll()},350);if(!W.running&&timer){clearInterval(timer);timer=null}}
+
+/* =========================
+   V5 SPATIAL ECONOMY
+   ========================= */
+const SEASONS=["Winter","Spring","Summer","Autumn"];
+const GOODS_V5={...GOODS};
+Object.assign(GOODS_V5,{
+  grain:{...GOODS.grain,spoil:.004,bulk:1,season:"Summer"},
+  flour:{...GOODS.flour,spoil:.012,bulk:.8},
+  bread:{...GOODS.bread,spoil:.045,bulk:.7},
+  fish:{...GOODS.fish,spoil:.025,bulk:.7},
+  wool:{...GOODS.wool,spoil:.006,bulk:1},
+  cloth:{...GOODS.cloth,spoil:.001,bulk:.55},
+  wood:{...GOODS.wood,spoil:.002,bulk:1.2},
+  iron:{...GOODS.iron,spoil:0,bulk:1.3},
+  tools:{...GOODS.tools,spoil:.001,bulk:.8},
+  fuel:{...GOODS.fuel,spoil:.01,bulk:1}
+});
+const REGIONS=[
+ {id:0,name:"Northfields",cx:-25,cz:-19,weather:0,roads:[1,2]},
+ {id:1,name:"Mill Vale",cx:-5,cz:-9,weather:0,roads:[0,2,3]},
+ {id:2,name:"Southroad",cx:15,cz:-18,weather:0,roads:[0,1,4]},
+ {id:3,name:"River Ward",cx:27,cz:14,weather:.15,roads:[1,4]},
+ {id:4,name:"East Downs",cx:18,cz:24,weather:.05,roads:[2,3]}
+];
+const V5RECIPES={
+ mill:{input:"grain",inQty:1.15,output:"flour",outQty:1},
+ bakery:{input:"flour",inQty:1.1,output:"bread",outQty:1.2},
+ loom:{input:"wool",inQty:1,output:"cloth",outQty:1},
+ forge:{input:"iron",inQty:.35,output:"tools",outQty:1},
+ carpenter:{input:"wood",inQty:1,output:"fuel",outQty:.75}
+};
+function season(){return SEASONS[Math.floor(((W.day-1)%365)/91.25)]}
+function regionFor(x,z){let best=REGIONS[0],bd=1e9;for(const q of REGIONS){const d=(x-q.cx)**2+(z-q.cz)**2;if(d<bd){bd=d;best=q}}return best.id}
+function distance(a,b){return Math.hypot(a.x-b.x,a.z-b.z)}
+function roadDistance(a,b){return distance(a,b)*1.18}
+function transportCost(qty,good,from,to){
+ const d=roadDistance(from,to), bulk=(GOODS_V5[good]?.bulk||1);
+ return d*.018*qty*bulk + qty*.006;
+}
+function initV5(){
+ W.regions=REGIONS.map(r=>({...r,markets:{},weather:"clear",weatherSeverity:0}));
+ for(const r of W.regions)for(const g in GOODS_V5)r.markets[g]={stock:0,price:GOODS_V5[g].base,demand:0,unmet:0,sales:0,production:0};
+ W.businesses.forEach((b,i)=>{
+   b.region=regionFor(b.location.x,b.location.z);b.inventory={};b.credit=0;b.debt=0;b.rent=.25;b.land=0;b.bankrupt=false;b.wageBase=1;
+   if(b.type==="farm")b.land=10+r(0,8);
+   const rm=W.regions[b.region].markets;
+   rm[b.output].stock+=r(5,15);
+   b.inventory[b.output]=r(2,8);
+   if(b.input){rm[b.input].stock+=r(3,8);b.inventory[b.input]=r(2,7)}
+ });
+ W.households.forEach(h=>{
+   const p=W.people.find(p=>p.household===h.id);h.region=p?.employer!=null?W.businesses.find(b=>b.id===p.employer)?.region:Math.floor(Math.random()*REGIONS.length);
+   h.debt=0;h.creditLimit=r(5,30);h.rent=Math.max(.12,h.rent||r(.08,.35));h.foodBuffer=r(.6,2.2);
+ });
+ W.people.forEach(p=>{p.wage=0;p.debt=0;p.cashflow=0;p.region=W.households[p.household]?.region||0});
+ W.carts=[];W.loans=[];W.tradeLog=[];W.bankruptcies=[];W.wageHistory=[];W.localPriceHistory={};
+ log("V5 spatial economy initialized: goods now move through physical regional markets with transport costs, spoilage and local price formation.");
+}
+function weatherTick(){
+ const base=Math.sin((W.day/365)*Math.PI*2);
+ for(const r of W.regions){
+   const x=Math.random();
+   if(x<.06){r.weather=pick(["storm","drought","frost","flood"]);r.weatherSeverity=r(.45,1)}
+   else if(x<.18){r.weather=pick(["rain","dry","wind"]);r.weatherSeverity=r(.15,.5)}
+   else {r.weather="clear";r.weatherSeverity=r(0,.15)}
+ }
+}
+function localMarketStep(){
+ for(const r of W.regions)for(const g in r.markets){
+   const m=r.markets[g];m.demand=0;m.sales=0;m.unmet=0;m.production=0;
+ }
+}
+function localPriceUpdate(){
+ for(const r of W.regions)for(const g in GOODS_V5){
+   const m=r.markets[g],base=GOODS_V5[g].base,d=Math.max(.05,m.demand),coverage=m.stock/d;
+   let pressure=clamp((4-coverage)/4,-1,1), change=.045*pressure+.05*clamp(m.unmet/d,0,2);
+   if(coverage>40)change-=.018;
+   if(m.stock<.001&&m.unmet>0)change+=.12;
+   m.price=clamp(m.price*(1+change+r(-.004,.004)),base*.25,GOODS_V5[g].max*1.35);
+ }
+}
+function farmOutput(b){
+ const rgn=W.regions[b.region], weatherFactor={clear:1,rain:1.05,storm:.55,drought:.45,frost:.4,flood:.55,wind:.9,dry:.8}[rgn.weather]||1;
+ const seasonFactor=season()==="Summer"?1.3:season()==="Autumn"?1.05:season()==="Spring"?0.75:.35;
+ const tools=W.regions[b.region].markets.tools.stock;
+ const toolFactor=clamp(0.7+tools/(tools+12),.7,1.35);
+ const q=b.capacity*b.efficiency*(1+r(.75,1.25))*weatherFactor*seasonFactor*toolFactor*(b.land/14);
+ const m=rgn.markets.grain;m.stock+=q;m.production+=q;b.cash+=q*m.price*.42;return q;
+}
+function genericOutput(b){
+ const rec=V5RECIPES[b.type];if(!rec)return 0;
+ const rgn=W.regions[b.region],mIn=rgn.markets[rec.input],mOut=rgn.markets[rec.output];
+ const labor=Math.max(.25,b.employees.length/3);
+ const desired=rec.inQty*labor*b.capacity;
+ const owned=b.inventory[rec.input]||0;
+ const use=Math.min(desired,owned,mIn.stock+owned);
+ if(use<=0)return 0;
+ b.inventory[rec.input]=Math.max(0,owned-use);
+ const units=use/rec.inQty,out=units*rec.outQty*b.efficiency;
+ mOut.stock+=out;mOut.production+=out;b.inventory[rec.output]=(b.inventory[rec.output]||0)+out;
+ return out;
+}
+function v5Production(){
+ for(const b of W.businesses.filter(x=>!x.bankrupt)){
+   if(b.type==="farm")farmOutput(b);
+   else if(b.type==="fishery"){
+     const rg=W.regions[b.region], weatherFactor=rg.weather==="storm"||rg.weather==="flood"?.55:1;
+     const q=b.capacity*b.efficiency*r(.7,1.2)*weatherFactor;rg.markets.fish.stock+=q;rg.markets.fish.production+=q;b.cash+=q*rg.markets.fish.price*.45;
+   } else if(V5RECIPES[b.type])genericOutput(b);
+ }
+}
+function createCart(owner,good,qty,from,to,orderId=null){
+ const a=REGIONS[from],b=REGIONS[to],cost=transportCost(qty,good,a,b);
+ if(owner.cash<cost)return false;
+ owner.cash-=cost;
+ W.carts.push({id:W.carts.length+1,owner:owner.id,good,qty,from,to,progress:0,days:Math.max(1,Math.ceil(roadDistance(a,b)/7)),cost,orderId});
+ return true;
+}
+function routeOrders(){
+ // Firms compare local price + transport with nearby regions and import only when profitable.
+ for(const b of W.businesses.filter(x=>!x.bankrupt&&x.input)){
+   const rec=V5RECIPES[b.type],home=W.regions[b.region],needed=Math.max(0,rec.inQty*Math.max(1,b.employees.length/3)*b.capacity*2-(b.inventory[b.input]||0));
+   if(needed<=.2)continue;
+   let best=null;
+   for(const r of W.regions){
+     if(r.id===b.region)continue;
+     const src=r.markets[rec.input],del=transportCost(needed,rec.input,r,home);
+     const landed=src.price+del/needed;
+     if(src.stock>needed*1.1 && (!best||landed<best.landed))best={r,src,landed,del};
+   }
+   const local=home.markets[rec.input];
+   const localLand=local.price;
+   if(best && best.landed<localLand*.94){
+     const qty=Math.min(needed,b.cash/Math.max(.01,best.landed*.85));
+     const supplier={cash:0}; // transport paid by business; commodity value settled on arrival.
+     if(qty>0 && createCart(b,rec.input,qty,best.r.id,b.region,b.id)){
+       best.src.stock-=qty; W.tradeLog.unshift(`${b.name} orders ${fmt(qty)} ${rec.input} from ${best.r.name}; landed cost ${money(best.landed)}.`);
+     }
+   } else if(local.stock>0){
+     const qty=Math.min(needed,local.stock,b.cash/Math.max(.01,local.price));
+     if(qty>0){local.stock-=qty;b.cash-=qty*local.price;b.inventory[b.input]=(b.inventory[b.input]||0)+qty;local.sales+=qty;local.demand+=needed}
+   }
+ }
+}
+function advanceCarts(){
+ for(let i=W.carts.length-1;i>=0;i--){
+   const c=W.carts[i];c.progress++;
+   if(c.progress>=c.days){
+     const dest=W.regions[c.to],price=dest.markets[c.good].price;
+     const b=W.businesses.find(x=>x.id===c.owner);
+     if(b&&!b.bankrupt){
+       const purchase=price*c.qty*.88;
+       if(b.cash>=purchase)b.cash-=purchase; else {b.debt+=purchase;b.cash=0}
+       b.inventory[c.good]=(b.inventory[c.good]||0)+c.qty;
+       dest.markets[c.good].sales+=c.qty;dest.markets[c.good].demand+=c.qty;
+       W.tradeLog.unshift(`${b.name} receives ${fmt(c.qty)} ${c.good} after ${c.days} days of transport.`);
+     }
+     W.carts.splice(i,1);
+   }
+ }
+}
+function householdSpatialConsumption(){
+ for(const h of W.households){
+   const members=h.members.map(id=>W.people.find(p=>p.id===id)).filter(p=>p&&p.alive);
+   if(!members.length)continue;
+   const rg=W.regions[h.region], foods=["bread","fish","grain"].sort((a,b)=>rg.markets[a].price/(GOODS_V5[a].cal||1)-rg.markets[b].price/(GOODS_V5[b].cal||1));
+   const desired=members.reduce((s,p)=>s+foodNeed(p)*(1+2.7*p.hunger),0);
+   let budget=Math.max(0,h.cash*.34+Math.max(0,h.cash-h.savingsTarget)*.2),got=0;
+   for(const g of foods){
+     const m=rg.markets[g],want=Math.max(0,desired-got)/(GOODS_V5[g].cal||1);
+     const qty=Math.min(want,m.stock,budget/Math.max(.01,m.price));
+     m.demand+=want;
+     if(qty>0){m.stock-=qty;m.sales+=qty;h.cash-=qty*m.price;budget-=qty*m.price;got+=qty*(GOODS_V5[g].cal||1)}
+     m.unmet+=Math.max(0,want-qty);
+   }
+   const ration=clamp(got/Math.max(.01,desired),0,1);
+   members.forEach(p=>{p.hunger=clamp(p.hunger+(1-ration)*.7-ration*.1,0,2);p.energy=clamp(p.energy+.025,0,1)});
+   h.foodBuffer=clamp(h.foodBuffer+(ration-.7)*.05,.1,4);
+ }
+}
+function spoilage(){
+ for(const rg of W.regions)for(const g in GOODS_V5){
+   const rate=GOODS_V5[g].spoil||0, m=rg.markets[g];m.stock*=Math.max(0,1-rate);
+ }
+ for(const b of W.businesses)for(const g in b.inventory){const rate=GOODS_V5[g]?.spoil||0;b.inventory[g]*=Math.max(0,1-rate)}
+}
+function wagesRentCredit(){
+ const wageByJob={farmer:1.1,miller:1.25,baker:1.35,merchant:1.15,weaver:1.1,smith:1.45,carpenter:1.15,fisher:1.15,laborer:1,guard:1.05,priest:1.0,scribe:1.3};
+ for(const p of W.people.filter(p=>p.alive)){
+   const b=p.employer!=null?W.businesses.find(x=>x.id===p.employer):null;
+   const rg=W.regions[p.region];
+   if(b&&!b.bankrupt){
+     const base=(wageByJob[p.job]||1)*(0.75+rg.markets[b.output]?.price/(GOODS_V5[b.output]?.base||1)*.08);
+     p.wage=base;p.wealth+=base;p.cashflow=base;
+     b.cash-=base;
+   } else {p.wage=0;p.cashflow=0}
+   p.region=b?b.region:W.households[p.household]?.region||0;
+ }
+ // Rent is a real recurring household liability.
+ for(const h of W.households){
+   const due=h.rent||.2;
+   if(h.cash>=due)h.cash-=due;
+   else {h.debt+=due-h.cash;h.cash=0}
+   if(h.debt>h.creditLimit*1.8)h.confidence=clamp(h.confidence-.04,.05,1);
+ }
+ // Small, interest-bearing emergency loans prevent immediate cash insolvency but create debt.
+ for(const h of W.households){
+   if(h.cash<1 && h.debt<h.creditLimit){
+     const loan=Math.min(h.creditLimit-h.debt,3);
+     h.debt+=loan;h.cash+=loan;W.loans.push({borrower:h.id,principal:loan,rate:.0015,age:0});
+   }
+ }
+ for(const b of W.businesses.filter(x=>!x.bankrupt)){
+   if(b.cash<0){b.debt+=-b.cash;b.cash=0}
+   b.debt*=1.0015;
+   if(b.debt>120 && b.cash<2){
+     b.bankrupt=true;W.bankruptcies.push({day:W.day,name:b.name,type:b.type});log(`${b.name} fails: debt overwhelms cash flow.`);
+     b.employees.forEach(id=>{const p=W.people.find(x=>x.id===id);if(p)p.employer=null});b.employees=[];
+   }
+ }
+}
+function adaptiveHiring(){
+ for(const b of W.businesses.filter(x=>!x.bankrupt)){
+   if(!b.output||b.type==="farm"||b.type==="fishery"||b.type==="merchant")continue;
+   const rec=V5RECIPES[b.type],rg=W.regions[b.region],margin=rg.markets[b.output].price*(rec?.outQty||1)-rg.markets[rec?.input||b.output].price*(rec?.inQty||1);
+   const wage=1+(rg.markets[b.output].price||1)*.05;
+   if(margin>wage*1.4 && b.employees.length<7){
+     const candidates=W.people.filter(p=>p.alive&&!p.employer&&W.households[p.household]?.region===b.region).sort((a,c)=>c.skill-a.skill);
+     if(candidates[0]){const p=candidates[0];p.employer=b.id;b.employees.push(p.id);log(`${b.name} hires ${p.name}; local expected contribution margin supports expansion.`)}
+   } else if(margin<wage*.25 && b.employees.length>1){
+     const pid=b.employees.pop(),p=W.people.find(x=>x.id===pid);if(p)p.employer=null;log(`${b.name} sheds labor as margins compress.`)
+   }
+ }
+}
+function v5MortalityBirths(){
+ let deaths=0;
+ for(const p of W.people)if(p.alive){
+   if(p.hunger>.55)p.health-=.003*p.hunger;
+   if(p.hunger>.9)p.health-=.009*p.hunger;
+   if(p.hunger>.72)p.daysStarved++;else p.daysStarved=Math.max(0,p.daysStarved-1);
+   if(p.daysStarved>10)p.health-=.014;
+   if(p.age>58)p.health-=.0005;
+   if(p.health<=0){p.alive=false;deaths++}
+ }
+ if(deaths)log(`${deaths} deaths recorded; prolonged food deprivation is physically consequential.`);
+ for(const h of W.households)h.members=h.members.filter(id=>{const p=W.people.find(x=>x.id===id);return p&&p.alive});
+ if(W.day===1){
+   const eligible=W.households.filter(h=>h.members.length>=2&&h.cash>5&&Math.random()<.014);
+   for(const h of eligible.slice(0,Math.max(0,Math.floor(W.people.length*.004)))){
+     const p=makePerson(W.people.length,h.id);p.age=0;p.job="laborer";p.wealth=0;p.hunger=.1;p.health=.92;p.employer=null;p.region=h.region;
+     W.people.push(p);h.members.push(p.id);log(`Birth: a new child joins ${h.name}.`);
+   }
+ }
+}
+function v5Tick(){
+ W.day++;if(W.day>365){W.day=1;W.year++}
+ weatherTick();localMarketStep();v5Production();routeOrders();advanceCarts();householdSpatialConsumption();
+ adaptiveHiring();wagesRentCredit();spoilage();localPriceUpdate();v5MortalityBirths();crime();
+ for(const p of W.people.filter(x=>x.alive)){
+   if(Math.random()<.04){const g=pick(["grain","flour","bread","fish"]);const rg=W.regions[p.region];p.knowledge[g]={price:rg.markets[g].price,region:p.region,age:0};p.memory.push({type:"market price",good:g,value:rg.markets[g].price,day:W.day});if(p.memory.length>24)p.memory.shift()}
+   for(const k in p.knowledge){p.knowledge[k].age++;if(p.knowledge[k].age>50)delete p.knowledge[k]}
+ }
+ if(W.day%7===0){
+   W.populationHistory.push(W.people.filter(p=>p.alive).length);
+   for(const g in GOODS_V5)W.priceHistory[g].push(W.regions.reduce((s,r)=>s+r.markets[g].price,0)/W.regions.length);
+ }
+}
+const oldInit=init;
+init=function(){oldInit();initV5();};
+const oldAdvance=advance;
+advance=function(n){for(let i=0;i<n;i++)v5Tick();renderAll();};
+
+/* =========================
+   MOBILE CANVAS WORLD
+   ========================= */
+let canvas,ctx,worldScale=1,worldOffsetX=0,worldOffsetY=0,dragging=false,lastPointer=null;
+const BUILD_COLORS={farm:'#a88958',mill:'#b79b68',bakery:'#a66f5b',fishery:'#5c8990',loom:'#8a6f8d',forge:'#70777a',carpenter:'#8b7754',merchant:'#b39a62'};
+function resizeCanvas(){if(!canvas)return;const d=Math.min(devicePixelRatio||1,2),r=canvas.getBoundingClientRect();canvas.width=Math.max(1,Math.floor(r.width*d));canvas.height=Math.max(1,Math.floor(r.height*d));ctx.setTransform(d,0,0,d,0,0)}
+function bounds(){return {w:canvas.clientWidth,h:canvas.clientHeight}}
+function fitWorld(){const q=bounds();worldScale=Math.min(q.w/105,q.h/105)*.9;worldOffsetX=q.w/2;worldOffsetY=q.h/2+10}
+function iso(x,z){return [worldOffsetX+(x-z)*.72*worldScale,worldOffsetY+(x+z)*.36*worldScale]}
+function zoomWorld(f,cx,cy){const old=worldScale;worldScale=clamp(worldScale*f,.42,7);if(cx!=null){worldOffsetX=cx-(cx-worldOffsetX)*worldScale/old;worldOffsetY=cy-(cy-worldOffsetY)*worldScale/old}renderWorld()}
+function worldDown(e){dragging=true;lastPointer={x:e.clientX,y:e.clientY};canvas.setPointerCapture?.(e.pointerId)}
+function worldMove(e){if(!dragging)return;worldOffsetX+=e.clientX-lastPointer.x;worldOffsetY+=e.clientY-lastPointer.y;lastPointer={x:e.clientX,y:e.clientY};renderWorld()}
+function worldUp(e){if(!lastPointer)return;const moved=Math.hypot(e.clientX-lastPointer.x,e.clientY-lastPointer.y);dragging=false;canvas.releasePointerCapture?.(e.pointerId);if(moved<7)pickWorld(e.clientX,e.clientY);lastPointer=null}
+function drawBuilding(b){const [x,y]=iso(b.location.x,b.location.z),s=Math.max(7,5.5*worldScale);ctx.save();ctx.translate(x,y);ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(0,s*.38,s*.8,s*.26,0,0,Math.PI*2);ctx.fill();ctx.fillStyle=BUILD_COLORS[b.type]||'#8b8578';ctx.beginPath();ctx.moveTo(-s*.58,0);ctx.lineTo(0,-s*.35);ctx.lineTo(s*.58,0);ctx.lineTo(0,s*.35);ctx.closePath();ctx.fill();ctx.fillStyle='#51483c';ctx.beginPath();ctx.moveTo(-s*.5,-s*.02);ctx.lineTo(0,-s*.53);ctx.lineTo(s*.5,-s*.02);ctx.lineTo(0,s*.34);ctx.closePath();ctx.fill();ctx.fillStyle='#e0c98f';ctx.fillRect(-s*.09,s*.02,s*.18,s*.23);if(b.type==='mill'){ctx.strokeStyle='#e1c98d';ctx.lineWidth=Math.max(1,s*.04);for(let i=0;i<4;i++){ctx.rotate(Math.PI/2);ctx.beginPath();ctx.moveTo(0,-s*.38);ctx.lineTo(0,-s*.78);ctx.stroke()}}ctx.restore()}
+function drawHouse(h,i){const x=-24+(i%10)*5,z=-30+Math.floor(i/10)*3.6,[sx,sy]=iso(x,z),s=Math.max(5,3.4*worldScale);ctx.save();ctx.translate(sx,sy);ctx.fillStyle='rgba(0,0,0,.18)';ctx.beginPath();ctx.ellipse(0,s*.25,s*.65,s*.2,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#71614f';ctx.beginPath();ctx.moveTo(-s*.5,0);ctx.lineTo(0,-s*.3);ctx.lineTo(s*.5,0);ctx.lineTo(0,s*.3);ctx.closePath();ctx.fill();ctx.fillStyle='#453d35';ctx.beginPath();ctx.moveTo(-s*.45,-s*.01);ctx.lineTo(0,-s*.4);ctx.lineTo(s*.45,-s*.01);ctx.lineTo(0,s*.28);ctx.closePath();ctx.fill();ctx.restore()}
+function drawCart(c){const a=REGIONS[c.from],b=REGIONS[c.to],t=clamp(c.progress/Math.max(1,c.days),0,1),[sx,sy]=iso(a.cx+(b.cx-a.cx)*t,a.cz+(b.cz-a.cz)*t),s=Math.max(5,2.8*worldScale);ctx.fillStyle='#c39b5e';ctx.fillRect(sx-s*.45,sy-s*.16,s*.9,s*.32);ctx.fillStyle='#40382e';ctx.beginPath();ctx.arc(sx-s*.28,sy+s*.2,s*.12,0,Math.PI*2);ctx.arc(sx+s*.28,sy+s*.2,s*.12,0,Math.PI*2);ctx.fill()}
+function pickWorld(px,py){let best=null,bd=18;for(const b of W.businesses){const p=iso(b.location.x,b.location.z),d=Math.hypot(px-p[0],py-p[1]);if(d<bd){bd=d;best={type:'business',id:b.id}}}if(!best){for(const h of W.households){const x=-24+(h.id%10)*5,z=-30+Math.floor(h.id/10)*3.6,p=iso(x,z),d=Math.hypot(px-p[0],py-p[1]);if(d<bd){bd=d;best={type:'household',id:h.id}}}}if(best){selected=best;renderInspector();openSheet()}}
+function renderWorld(){if(!ctx)return;const q=bounds();ctx.clearRect(0,0,q.w,q.h);ctx.fillStyle='#263126';ctx.fillRect(0,0,q.w,q.h);ctx.fillStyle='#314b4e';const r1=iso(35,-60),r2=iso(35,60);ctx.beginPath();ctx.moveTo(r1[0]-7*worldScale,r1[1]);ctx.lineTo(r1[0]+7*worldScale,r1[1]);ctx.lineTo(r2[0]+7*worldScale,r2[1]);ctx.lineTo(r2[0]-7*worldScale,r2[1]);ctx.closePath();ctx.fill();ctx.strokeStyle='#655a4b';ctx.lineWidth=Math.max(2,2.4*worldScale);for(let i=-2;i<=2;i++){let a=iso(i*10,-55),b=iso(i*10,55);ctx.beginPath();ctx.moveTo(...a);ctx.lineTo(...b);ctx.stroke()}for(let i=-3;i<=3;i++){let a=iso(-55,i*10),b=iso(55,i*10);ctx.beginPath();ctx.moveTo(...a);ctx.lineTo(...b);ctx.stroke()}for(let i=0;i<70;i++){const x=-50+(i*37)%100,z=-48+(i*61)%96,p=iso(x,z),s=Math.max(2,2.3*worldScale);ctx.fillStyle='#3e583d';ctx.beginPath();ctx.arc(p[0],p[1]-s*.3,s,0,Math.PI*2);ctx.fill()}for(const b of W.businesses.filter(x=>x.type==='farm')){const p=iso(b.location.x+4,b.location.z+2);ctx.fillStyle='#5f6842';for(let k=0;k<4;k++)ctx.fillRect(p[0]+k*5*worldScale,p[1]+k*2*worldScale,3*worldScale,14*worldScale)}const sq=iso(0,0);ctx.fillStyle='#746b5c';ctx.beginPath();ctx.ellipse(sq[0],sq[1],10*worldScale,5*worldScale,0,0,Math.PI*2);ctx.fill();W.businesses.forEach(drawBuilding);W.households.forEach(drawHouse);W.carts.forEach(drawCart);if(worldScale>2){ctx.font='600 10px -apple-system,BlinkMacSystemFont,sans-serif';ctx.fillStyle='#eee8d8';for(const b of W.businesses){const p=iso(b.location.x,b.location.z);ctx.fillText(b.name.replace(/ #\d+/,'').toUpperCase(),p[0]-20,p[1]-12)}}}
+function animateWorld(){renderWorld();requestAnimationFrame(animateWorld)}
+function buildWorld(){canvas=document.getElementById('worldCanvas');ctx=canvas.getContext('2d');resizeCanvas();fitWorld();canvas.addEventListener('pointerdown',worldDown);canvas.addEventListener('pointermove',worldMove);canvas.addEventListener('pointerup',worldUp);canvas.addEventListener('pointercancel',worldUp);canvas.addEventListener('wheel',e=>{e.preventDefault();zoomWorld(e.deltaY>0?.9:1.1,e.clientX,e.clientY)},{passive:false});addEventListener('resize',()=>{resizeCanvas();fitWorld();renderWorld()},{passive:true});animateWorld()}
+function setCamera(which){if(which==='overview')fitWorld();else if(which==='close'){worldScale=Math.min(canvas.clientWidth,canvas.clientHeight)/62;worldOffsetX=canvas.clientWidth/2;worldOffsetY=canvas.clientHeight/2}else if(which==='north'){worldScale=Math.min(canvas.clientWidth,canvas.clientHeight)/75;worldOffsetX=canvas.clientWidth/2;worldOffsetY=canvas.clientHeight*.38}else if(which==='south'){worldScale=Math.min(canvas.clientWidth,canvas.clientHeight)/75;worldOffsetX=canvas.clientWidth/2;worldOffsetY=canvas.clientHeight*.62}renderWorld()}
+/* ========================= UI ========================= */
+function openSheet(){document.getElementById('sheet').classList.add('open')}
+function closeSheet(){document.getElementById('sheet').classList.remove('open')}
+function setMode(m,el){mode=m;document.querySelectorAll('.navItem').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active');renderAll()}
+function setSelected(type,id){selected={type,id};renderInspector();openSheet()}
+function businessDetail(b){const rg=W.regions[b.region],r=V5RECIPES[b.type];return `<div class="eyebrow">ECONOMIC ACTOR</div><div class="sheetTitle">${b.name}</div><div class="sheetSub">${b.type} · ${rg?.name||'—'}</div><div class="statGrid"><div><b>${money(b.cash)}</b><span>cash</span></div><div><b>${money(b.lastProfit)}</b><span>profit</span></div><div><b>${b.employees.length}</b><span>workers</span></div><div><b>${Math.round((b.efficiency||1)*100)}%</b><span>efficiency</span></div></div><div class="sectionTitle">Supply chain</div><div class="chain"><span>${b.input||'raw'}</span><i>→</i><strong>${b.output}</strong></div><div class="rows"><div><span>Input stock</span><b>${fmt(b.inventory?.[b.input]||0)}</b></div><div><span>Output stock</span><b>${fmt(b.inventory?.[b.output]||0)}</b></div><div><span>Capacity</span><b>${fmt(b.capacity)}</b></div><div><span>Debt</span><b>${money(b.debt)}</b></div></div>`}
+function householdDetail(h){const ps=h.members.map(id=>W.people.find(p=>p.id===id)).filter(Boolean),health=ps.reduce((s,p)=>s+p.health,0)/Math.max(1,ps.length),hung=ps.reduce((s,p)=>s+p.hunger,0)/Math.max(1,ps.length);return `<div class="eyebrow">HOUSEHOLD</div><div class="sheetTitle">${h.name}</div><div class="sheetSub">${W.regions[h.region]?.name||'—'} · ${ps.length} members</div><div class="statGrid"><div><b>${money(h.cash)}</b><span>cash</span></div><div><b>${fmt(health)}</b><span>health</span></div><div><b>${fmt(hung)}</b><span>hunger</span></div><div><b>${money(h.debt)}</b><span>debt</span></div></div><div class="sectionTitle">Members</div>${ps.map(p=>`<button class="personRow" onclick="setSelected('person',${p.id})"><span><b>${p.name}</b><small>${p.job} · age ${p.age}</small></span><strong>${money(p.wealth)}</strong></button>`).join('')}`}
+function personDetail(p){const h=W.households[p.household],b=p.employer!=null?W.businesses.find(x=>x.id===p.employer):null;return `<div class="eyebrow">RESIDENT</div><div class="sheetTitle">${p.name}</div><div class="sheetSub">Age ${p.age} · ${p.job} · ${W.regions[h?.region]?.name||'—'}</div><div class="statGrid"><div><b>${money(p.wealth)}</b><span>wealth</span></div><div><b>${fmt(p.health)}</b><span>health</span></div><div><b>${fmt(p.hunger)}</b><span>hunger</span></div><div><b>${Math.round(p.skill*100)}%</b><span>skill</span></div></div><div class="sectionTitle">Decision state</div><div class="rows"><div><span>Goal</span><b>${p.goal}</b></div><div><span>Employer</span><b>${b?.name||'none'}</b></div><div><span>Lawfulness</span><b>${Math.round(p.law*100)}%</b></div><div><span>Risk</span><b>${Math.round(p.risk*100)}%</b></div><div><span>Days starved</span><b class="${p.daysStarved>4?'danger':''}">${p.daysStarved}</b></div></div>`}
+function renderInspector(){const e=document.getElementById('inspector');if(!selected){e.innerHTML=`<div class="eyebrow">OBSERVER</div><div class="heroTitle">The Living Realm</div><div class="heroSub">A living economic world. Pan the map, tap a building, and follow the consequences down to a household or person.</div><div class="quickGrid"><button onclick="setMode('economy',document.querySelector('[data-mode=economy]'))"><b>Markets</b><small>regional prices</small></button><button onclick="setMode('supply',document.querySelector('[data-mode=supply]'))"><b>Supply</b><small>production chain</small></button></div>`;return}if(selected.type==='business'){const b=W.businesses.find(x=>x.id===selected.id);e.innerHTML=b?businessDetail(b):''}else if(selected.type==='household'){const h=W.households[selected.id];e.innerHTML=h?householdDetail(h):''}else{const p=W.people.find(x=>x.id===selected.id);e.innerHTML=p?personDetail(p):''}}
+function economyView(){return `<div class="viewPanel"><div class="eyebrow">ECONOMY</div><div class="pageTitle">Regional markets</div><div class="pageSub">Local scarcity creates local prices. Tap a region to center the world on it.</div>${W.regions.map(r=>{const m=r.markets.grain;return `<button class="dataCard" onclick="focusRegion(${r.id})"><span><b>${r.name}</b><small>grain · ${fmt(m.stock)} stock</small></span><strong>${money(m.price)}</strong></button>`}).join('')}</div>`}
+function supplyView(){return `<div class="viewPanel"><div class="eyebrow">SUPPLY CHAIN</div><div class="pageTitle">Field → table</div><div class="pageSub">Production consumes physical inputs. Trade consumes time and money.</div><div class="bigChain"><div><b>GRAIN</b><small>farms</small></div><i>→</i><div><b>FLOUR</b><small>mills</small></div><i>→</i><div><b>BREAD</b><small>bakeries</small></div><i>→</i><div><b>FOOD</b><small>households</small></div></div><div class="insight"><b>Live logistics</b><span>${W.carts.length} carts are currently moving goods between regions.</span></div></div>`}
+function listView(kind){if(kind==='households')return `<div class="viewPanel"><div class="eyebrow">HOUSEHOLDS</div><div class="pageTitle">Households</div><input class="searchBox" placeholder="Search households" oninput="filterList(this.value,'households')"><div id="listContent">${W.households.slice(0,80).map(h=>`<button class="listRow" onclick="setSelected('household',${h.id})"><span><b>${h.name}</b><small>${W.regions[h.region]?.name||'—'} · ${h.members.length} members</small></span><strong>${money(h.cash)}</strong></button>`).join('')}</div></div>`;return `<div class="viewPanel"><div class="eyebrow">PEOPLE</div><div class="pageTitle">Residents</div><input class="searchBox" placeholder="Name or occupation" oninput="filterList(this.value,'people')"><div id="listContent">${W.people.filter(p=>p.alive).slice(0,100).map(p=>`<button class="listRow" onclick="setSelected('person',${p.id})"><span><b>${p.name}</b><small>${p.job} · ${p.goal}</small></span><strong>${money(p.wealth)}</strong></button>`).join('')}</div></div>`}
+function filterList(q,k){q=q.toLowerCase();const e=document.getElementById('listContent');if(!e)return;if(k==='households')e.innerHTML=W.households.filter(h=>h.name.toLowerCase().includes(q)).slice(0,100).map(h=>`<button class="listRow" onclick="setSelected('household',${h.id})"><span><b>${h.name}</b><small>${W.regions[h.region]?.name||'—'} · ${h.members.length} members</small></span><strong>${money(h.cash)}</strong></button>`).join('');else e.innerHTML=W.people.filter(p=>p.alive&&(p.name.toLowerCase().includes(q)||p.job.includes(q))).slice(0,120).map(p=>`<button class="listRow" onclick="setSelected('person',${p.id})"><span><b>${p.name}</b><small>${p.job} · ${p.goal}</small></span><strong>${money(p.wealth)}</strong></button>`).join('')}
+function drawAnalytics(){const c=document.getElementById('analyticsCanvas');if(!c)return;const d=Math.min(devicePixelRatio||1,2),w=c.clientWidth,h=c.clientHeight;c.width=w*d;c.height=h*d;const x=c.getContext('2d');x.scale(d,d);x.fillStyle='#171d18';x.fillRect(0,0,w,h);const a=W.priceHistory.grain||[],b=W.priceHistory.bread||[],max=Math.max(3,...a,...b),pad=18;x.strokeStyle='#3a443b';for(let i=1;i<5;i++){x.beginPath();x.moveTo(pad,i*h/5);x.lineTo(w-pad,i*h/5);x.stroke()}for(const arr of [a,b]){x.strokeStyle=arr===a?'#d1b06c':'#8da6bc';x.lineWidth=2;x.beginPath();arr.forEach((v,i)=>{const px=pad+i/Math.max(1,arr.length-1)*(w-2*pad),py=h-pad-v/max*(h-2*pad);i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke()}}
+function renderMode(){const v=document.getElementById('view');if(mode==='world'){v.innerHTML='';return}if(mode==='economy'){v.innerHTML=economyView();return}if(mode==='supply'){v.innerHTML=supplyView();return}if(mode==='households'){v.innerHTML=listView('households');return}if(mode==='people'){v.innerHTML=listView('people');return}if(mode==='chronicle'){v.innerHTML=`<div class="viewPanel"><div class="eyebrow">CHRONICLE</div><div class="pageTitle">Economic history</div><div class="pageSub">Grain and bread price movement.</div><canvas id="analyticsCanvas"></canvas></div>`;setTimeout(drawAnalytics,0);return}v.innerHTML=`<div class="viewPanel"><div class="eyebrow">FACTIONS</div><div class="pageTitle">Institutions</div><div class="metricLine"><span>Firms</span><b>${W.businesses.length}</b></div><div class="metricLine"><span>Active carts</span><b>${W.carts.length}</b></div><div class="metricLine"><span>Bankrupt firms</span><b>${W.businesses.filter(b=>b.bankrupt).length}</b></div><div class="metricLine"><span>Household debt</span><b>${money(W.households.reduce((s,h)=>s+h.debt,0))}</b></div></div>`}
+function focusRegion(id){const r=REGIONS[id];worldOffsetX=canvas.clientWidth/2-r.cx*worldScale*.72;worldOffsetY=canvas.clientHeight/2-r.cz*worldScale*.36;mode='world';document.querySelectorAll('.navItem').forEach(x=>x.classList.toggle('active',x.dataset.mode==='world'));renderMode();renderWorld()}
+function renderTop(){const grain=W.regions.reduce((s,r)=>s+(r.markets.grain?.stock||0),0),gp=W.regions.reduce((s,r)=>s+(r.markets.grain?.price||0),0)/W.regions.length;document.getElementById('date').textContent=`${W.year} · ${W.day}`;document.getElementById('pop').textContent=W.people.filter(p=>p.alive).length.toLocaleString();document.getElementById('gprice').textContent=money(gp);document.getElementById('season').textContent=season();document.getElementById('weather').textContent=W.regions.map(r=>r.weather).filter((v,i,a)=>a.indexOf(v)===i).slice(0,2).join(' · ');document.getElementById('runState').textContent=W.running?'LIVE':'PAUSED'}
+function renderAll(){renderTop();renderMode();renderInspector();renderWorld()}
+toggleRun=function(){W.running=!W.running;document.getElementById('runBtn').textContent=W.running?'Ⅱ':'▶';document.getElementById('runBtn2').textContent=W.running?'Ⅱ':'▶';if(W.running&&!timer)timer=setInterval(()=>{for(let i=0;i<2;i++)v5Tick();renderAll()},450);if(!W.running&&timer){clearInterval(timer);timer=null}}
+function startAppV6(){init();buildWorld();renderAll();fitWorld();renderWorld()}
+startAppV6();
+</script></body></html>
